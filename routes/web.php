@@ -8,29 +8,14 @@ use App\Http\Controllers\TransacaoController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AuthController;
 
-/*
-|--------------------------------------------------------------------------
-| Rotas de Autenticação / Sessão
-|--------------------------------------------------------------------------
-*/
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/registro', [AuthController::class, 'register'])->name('register.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| Dashboard Principal
-|--------------------------------------------------------------------------
-*/
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-/*
-|--------------------------------------------------------------------------
-| Rotas - CRUD Contas Bancárias
-|--------------------------------------------------------------------------
-*/
 Route::get('/conta', [ContaController::class, 'index']);
 Route::get('/conta/create', [ContaController::class, 'create']);
 Route::post('/conta/store', [ContaController::class, 'store'])->name('conta.store');
@@ -39,11 +24,6 @@ Route::put('/conta/update/{id}', [ContaController::class, 'update'])->name('cont
 Route::delete('/conta/{id}', [ContaController::class, 'destroy'])->name('conta.destroy');
 Route::post('/conta/search', [ContaController::class, 'search'])->name('conta.search');
 
-/*
-|--------------------------------------------------------------------------
-| Rotas - CRUD Categorias
-|--------------------------------------------------------------------------
-*/
 Route::get('/categoria', [CategoriaController::class, 'index']);
 Route::get('/categoria/create', [CategoriaController::class, 'create']);
 Route::post('/categoria/store', [CategoriaController::class, 'store'])->name('categoria.store');
@@ -52,11 +32,6 @@ Route::put('/categoria/update/{id}', [CategoriaController::class, 'update'])->na
 Route::delete('/categoria/{id}', [CategoriaController::class, 'destroy'])->name('categoria.destroy');
 Route::post('/categoria/search', [CategoriaController::class, 'search'])->name('categoria.search');
 
-/*
-|--------------------------------------------------------------------------
-| Rotas - CRUD Transações
-|--------------------------------------------------------------------------
-*/
 Route::get('/transacao', [TransacaoController::class, 'index']);
 Route::get('/transacao/create', [TransacaoController::class, 'create']);
 Route::post('/transacao/store', [TransacaoController::class, 'store'])->name('transacao.store');
@@ -65,11 +40,6 @@ Route::put('/transacao/update/{id}', [TransacaoController::class, 'update'])->na
 Route::delete('/transacao/{id}', [TransacaoController::class, 'destroy'])->name('transacao.destroy');
 Route::post('/transacao/search', [TransacaoController::class, 'search'])->name('transacao.search');
 
-/*
-|--------------------------------------------------------------------------
-| Rotas - CRUD Usuários
-|--------------------------------------------------------------------------
-*/
 Route::get('/usuario', [UsuarioController::class, 'index']);
 Route::get('/usuario/create', [UsuarioController::class, 'create']);
 Route::post('/usuario/store', [UsuarioController::class, 'store'])->name('usuario.store');
