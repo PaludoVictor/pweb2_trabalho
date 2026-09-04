@@ -80,10 +80,8 @@ class ContaController extends Controller
     public function search(Request $request)
     {
         if (!empty($request->valor)) {
-            $campo = in_array($request->tipo, ['nome_instituicao', 'agencia_numero', 'numero_conta']) ? $request->tipo : 'nome_instituicao';
-
             $dados = Conta::where(
-                $campo,
+                'nome_instituicao',
                 'like',
                 "%$request->valor%"
             )->get();

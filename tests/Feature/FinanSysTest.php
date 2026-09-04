@@ -73,7 +73,6 @@ class FinanSysTest extends TestCase
 
         // 6. Search
         $response = $this->post(route('conta.search'), [
-            'tipo' => 'nome_instituicao',
             'valor' => 'C6 Bank',
         ]);
         $response->assertStatus(200);
@@ -127,7 +126,6 @@ class FinanSysTest extends TestCase
 
         // 4. Search
         $response = $this->post(route('categoria.search'), [
-            'tipo' => 'nome_categoria',
             'valor' => 'Viagens',
         ]);
         $response->assertStatus(200);
@@ -172,7 +170,6 @@ class FinanSysTest extends TestCase
 
         // 3. Search
         $response = $this->post(route('transacao.search'), [
-            'tipo' => 'descricao_movimento',
             'valor' => 'Computador',
         ]);
         $response->assertStatus(200);

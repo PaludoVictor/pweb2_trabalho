@@ -93,30 +93,10 @@ class TransacaoController extends Controller
     public function search(Request $request)
     {
         if (!empty($request->valor)) {
-            $tipo = $request->tipo;
-            $valor = $request->valor;
-
-            if ($tipo === 'nome_categoria') {
-                $dados = Transacao::with(['conta', 'categoria'])
-                    ->whereHas('categoria', function ($q) use ($valor) {
-                        $q->where('nome_categoria', 'like', "%$valor%");
-                    })
-                    ->orderBy('data_competencia', 'desc')
-                    ->get();
-            } elseif ($tipo === 'nome_instituicao') {
-                $dados = Transacao::with(['conta', 'categoria'])
-                    ->whereHas('conta', function ($q) use ($valor) {
-                        $q->where('nome_instituicao', 'like', "%$valor%");
-                    })
-                    ->orderBy('data_competencia', 'desc')
-                    ->get();
-            } else {
-                $campo = in_array($tipo, ['descricao_movimento', 'metodo_pagamento']) ? $tipo : 'descricao_movimento';
-                $dados = Transacao::with(['conta', 'categoria'])
-                    ->where($campo, 'like', "%$valor%")
-                    ->orderBy('data_competencia', 'desc')
-                    ->get();
-            }
+            $dados = Transacao::with(['conta', 'categoria'])
+                ->where('descricao_movimento', 'like', "%$request->valor%")
+                ->orderBy('data_competencia', 'desc')
+                ->get();
         } else {
             $dados = Transacao::with(['conta', 'categoria'])->orderBy('data_competencia', 'desc')->get();
         }

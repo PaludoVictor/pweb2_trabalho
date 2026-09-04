@@ -77,10 +77,8 @@ class CategoriaController extends Controller
     public function search(Request $request)
     {
         if (!empty($request->valor)) {
-            $campo = in_array($request->tipo, ['nome_categoria', 'tipo_despesa']) ? $request->tipo : 'nome_categoria';
-
             $dados = Categoria::where(
-                $campo,
+                'nome_categoria',
                 'like',
                 "%$request->valor%"
             )->get();

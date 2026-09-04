@@ -20,21 +20,23 @@ class CategoriaFactory extends Factory
     public function definition(): array
     {
         $categorias = [
-            ['nome' => 'Alimentação', 'cor' => '#10b981', 'tipo' => 'Variável'],
-            ['nome' => 'Moradia', 'cor' => '#3b82f6', 'tipo' => 'Fixa'],
-            ['nome' => 'Transporte', 'cor' => '#f59e0b', 'tipo' => 'Variável'],
-            ['nome' => 'Saúde', 'cor' => '#ef4444', 'tipo' => 'Fixa'],
-            ['nome' => 'Educação', 'cor' => '#8b5cf6', 'tipo' => 'Fixa'],
-            ['nome' => 'Lazer', 'cor' => '#ec4899', 'tipo' => 'Variável'],
-            ['nome' => 'Investimentos', 'cor' => '#06b6d4', 'tipo' => 'Variável'],
+            ['nome' => 'Alimentação & Supermercado', 'cor' => '#10b981', 'tipo' => 'Variável'],
+            ['nome' => 'Moradia & Contas', 'cor' => '#3b82f6', 'tipo' => 'Fixa'],
+            ['nome' => 'Transporte & Mobilidade', 'cor' => '#f59e0b', 'tipo' => 'Variável'],
+            ['nome' => 'Saúde & Cuidados', 'cor' => '#ef4444', 'tipo' => 'Fixa'],
+            ['nome' => 'Educação & Cursos', 'cor' => '#8b5cf6', 'tipo' => 'Fixa'],
+            ['nome' => 'Lazer & Entretenimento', 'cor' => '#ec4899', 'tipo' => 'Variável'],
+            ['nome' => 'Investimentos & Reserva', 'cor' => '#06b6d4', 'tipo' => 'Variável'],
+            ['nome' => 'Vestuário & Compras', 'cor' => '#84cc16', 'tipo' => 'Variável'],
+            ['nome' => 'Assinaturas & Serviços', 'cor' => '#6366f1', 'tipo' => 'Fixa'],
         ];
 
         $item = fake()->randomElement($categorias);
 
         return [
-            'nome_categoria' => $item['nome'] . ' ' . fake()->unique()->numberBetween(1, 999),
+            'nome_categoria' => $item['nome'],
             'tipo_despesa' => $item['tipo'],
-            'limite_orcamento' => fake()->randomFloat(2, 200, 3000),
+            'limite_orcamento' => fake()->randomFloat(2, 300, 3000),
             'cor_identificacao' => $item['cor'],
         ];
     }

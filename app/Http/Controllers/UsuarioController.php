@@ -94,10 +94,8 @@ class UsuarioController extends Controller
     public function search(Request $request)
     {
         if (!empty($request->valor)) {
-            $campo = in_array($request->tipo, ['nome', 'email', 'login']) ? $request->tipo : 'nome';
-
             $dados = Usuario::where(
-                $campo,
+                'nome',
                 'like',
                 "%$request->valor%"
             )->get();
