@@ -11,16 +11,8 @@
 <form action="{{ route('transacao.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-3">
-            <select name="tipo" class="form-select">
-                <option value="descricao_movimento">Descrição</option>
-                <option value="nome_instituicao">Conta / Banco</option>
-                <option value="nome_categoria">Categoria</option>
-                <option value="metodo_pagamento">Método</option>
-            </select>
-        </div>
-        <div class="col-md-5">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar transação...">
+        <div class="col-md-8">
+            <input type="text" name="valor" class="form-control" placeholder="Buscar transação por descrição...">
         </div>
         <div class="col-md-4">
             <button class="btn btn-outline-secondary" type="submit">Pesquisar</button>

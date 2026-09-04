@@ -11,15 +11,8 @@
 <form action="{{ route('usuario.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-3">
-            <select name="tipo" class="form-select">
-                <option value="nome">Nome</option>
-                <option value="login">Login</option>
-                <option value="email">E-mail</option>
-            </select>
-        </div>
-        <div class="col-md-5">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar usuário...">
+        <div class="col-md-8">
+            <input type="text" name="valor" class="form-control" placeholder="Buscar usuário por nome...">
         </div>
         <div class="col-md-4">
             <button class="btn btn-outline-secondary" type="submit">Pesquisar</button>

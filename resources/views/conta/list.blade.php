@@ -11,15 +11,8 @@
 <form action="{{ route('conta.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-3">
-            <select name="tipo" class="form-select">
-                <option value="nome_instituicao">Instituição</option>
-                <option value="numero_conta">Número da Conta</option>
-                <option value="agencia_numero">Agência</option>
-            </select>
-        </div>
-        <div class="col-md-5">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar por instituição ou conta...">
+        <div class="col-md-8">
+            <input type="text" name="valor" class="form-control" placeholder="Buscar por instituição...">
         </div>
         <div class="col-md-4">
             <button class="btn btn-outline-secondary" type="submit">Pesquisar</button>
