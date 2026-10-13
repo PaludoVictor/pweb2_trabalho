@@ -16,6 +16,8 @@ class Transacao extends Model
         'valor_transacao',
         'data_competencia',
         'metodo_pagamento',
+        'observacao',
+        'imagem',
         'conta_id',
         'categoria_id'
     ];

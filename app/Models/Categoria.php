@@ -13,6 +13,7 @@ class Categoria extends Model
 
     protected $fillable = [
         'nome_categoria',
+        'descricao',
         'tipo_despesa',
         'limite_orcamento',
         'cor_identificacao'
@@ -21,5 +22,10 @@ class Categoria extends Model
     public function transacoes()
     {
         return $this->hasMany(Transacao::class, 'categoria_id');
+    }
+
+    public function metas()
+    {
+        return $this->hasMany(Meta::class, 'categoria_id');
     }
 }

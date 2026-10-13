@@ -41,7 +41,7 @@ class CategoriaController extends Controller
 
         Categoria::create($request->all());
 
-        return redirect('categoria');
+        return redirect('categoria')->with('success', 'Registro Salvo com sucesso!');
     }
 
     public function edit($id)
@@ -59,19 +59,23 @@ class CategoriaController extends Controller
     {
         $this->validateForm($request);
 
-        $cat = Categoria::find($id);
-        if ($cat) {
-            $cat->update($request->all());
-        }
+        $cat = Categoria::findOrFail($id);
+        $cat->update($request->all());
 
-        return redirect('categoria');
+        return redirect('categoria')->with('success', 'Registro Atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
+        $cat = Categoria::findOrFail($id);
+
+        if ($cat->transacoes->count() > 0 || $cat->metas->count() > 0) {
+            return redirect('categoria')->with("error", "Não é possível remover a categoria {$cat->nome_categoria}, pois existem transações ou metas associadas a ela!");
+        }
+
         Categoria::destroy($id);
 
-        return redirect('categoria');
+        return redirect('categoria')->with('success', 'Registro removido com sucesso!');
     }
 
     public function search(Request $request)

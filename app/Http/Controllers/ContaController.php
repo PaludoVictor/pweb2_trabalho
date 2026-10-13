@@ -44,7 +44,7 @@ class ContaController extends Controller
 
         Conta::create($request->all());
 
-        return redirect('conta');
+        return redirect('conta')->with('success', 'Registro Salvo com sucesso!');
     }
 
     public function edit($id)
@@ -62,19 +62,23 @@ class ContaController extends Controller
     {
         $this->validateForm($request, $id);
 
-        $conta = Conta::find($id);
-        if ($conta) {
-            $conta->update($request->all());
-        }
+        $conta = Conta::findOrFail($id);
+        $conta->update($request->all());
 
-        return redirect('conta');
+        return redirect('conta')->with('success', 'Registro Atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
+        $conta = Conta::findOrFail($id);
+
+        if ($conta->transacoes->count() > 0 || $conta->cartoes->count() > 0 || $conta->metas->count() > 0) {
+            return redirect('conta')->with("error", "Não é possível remover a conta {$conta->nome_instituicao}, pois existem dados associados a ela!");
+        }
+
         Conta::destroy($id);
 
-        return redirect('conta');
+        return redirect('conta')->with('success', 'Registro removido com sucesso!');
     }
 
     public function search(Request $request)

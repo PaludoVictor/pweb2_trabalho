@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             ContaSeeder::class,
             CategoriaSeeder::class,
             TransacaoSeeder::class,
+            CartaoSeeder::class,
+            MetaSeeder::class,
             UsuarioSeeder::class,
         ]);
     }

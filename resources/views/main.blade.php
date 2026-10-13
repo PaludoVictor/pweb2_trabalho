@@ -69,6 +69,13 @@
     <main class="main-content flex-grow-1 d-flex flex-column">
         <div class="container-fluid p-5 flex-grow-1">
 
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="fechar"></button>
+                </div>
+            @endif
+
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}

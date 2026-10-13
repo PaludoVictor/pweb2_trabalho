@@ -54,7 +54,7 @@ class UsuarioController extends Controller
 
         Usuario::create($request->all());
 
-        return redirect('usuario');
+        return redirect('usuario')->with('success', 'Registro Salvo com sucesso!');
     }
 
     public function edit($id)
@@ -81,14 +81,14 @@ class UsuarioController extends Controller
             $usuario->update($dados);
         }
 
-        return redirect('usuario');
+        return redirect('usuario')->with('success', 'Registro Atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
         Usuario::destroy($id);
 
-        return redirect('usuario');
+        return redirect('usuario')->with('success', 'Registro removido com sucesso!');
     }
 
     public function search(Request $request)

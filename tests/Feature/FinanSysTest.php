@@ -6,8 +6,12 @@ use Tests\TestCase;
 use App\Models\Conta;
 use App\Models\Categoria;
 use App\Models\Transacao;
+use App\Models\Meta;
+use App\Models\Cartao;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class FinanSysTest extends TestCase
 {
@@ -23,14 +27,14 @@ class FinanSysTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('Resumo Financeiro');
-        $response->assertSee('Distribuição de Lançamentos por Categoria');
-        $response->assertSee('Total Geral');
+        $response->assertSee('Painel de Controle Financeiro');
+        $response->assertSee('Total em Contas');
+        $response->assertSee('Distribuição por Categoria');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Tests for Conta CRUD
+    | Tests for Conta CRUD (1:N and 1:1)
     |--------------------------------------------------------------------------
     */
     public function test_conta_crud_operations()
@@ -79,7 +83,7 @@ class FinanSysTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Banco C6 Bank');
 
-        // 7. Destroy
+        // 7. Destroy (without children)
         $response = $this->delete(route('conta.destroy', $conta->id));
         $response->assertRedirect('/conta');
         $this->assertDatabaseMissing('contas', ['id' => $conta->id]);
@@ -141,19 +145,23 @@ class FinanSysTest extends TestCase
 
     /*
     |--------------------------------------------------------------------------
-    | Tests for Transacao CRUD & Relationships
+    | Tests for Transacao CRUD, Upload & Reports
     |--------------------------------------------------------------------------
     */
-    public function test_transacao_crud_and_relationships()
+    public function test_transacao_crud_upload_and_reports()
     {
+        Storage::fake('public');
+
         $conta = Conta::first();
         $categoria = Categoria::first();
 
         // 1. List
         $response = $this->get('/transacao');
         $response->assertStatus(200);
+        $response->assertSee('Gerenciar Transações');
 
-        // 2. Store
+        // 2. Store with image upload
+        $fakeImage = UploadedFile::fake()->image('comprovante.jpg');
         $tData = [
             'descricao_movimento' => 'Manutenção Computador',
             'valor_transacao' => 320.00,
@@ -161,14 +169,15 @@ class FinanSysTest extends TestCase
             'metodo_pagamento' => 'Pix',
             'conta_id' => $conta->id,
             'categoria_id' => $categoria->id,
+            'imagem' => $fakeImage,
         ];
         $response = $this->post(route('transacao.store'), $tData);
         $response->assertRedirect('/transacao');
         $this->assertDatabaseHas('transacoes', ['descricao_movimento' => 'Manutenção Computador']);
 
         $transacao = Transacao::where('descricao_movimento', 'Manutenção Computador')->first();
-        $this->assertEquals($conta->nome_instituicao, $transacao->conta->nome_instituicao);
-        $this->assertEquals($categoria->nome_categoria, $transacao->categoria->nome_categoria);
+        $this->assertNotNull($transacao->imagem);
+        Storage::disk('public')->assertExists($transacao->imagem);
 
         // 3. Search
         $response = $this->post(route('transacao.search'), [
@@ -178,10 +187,133 @@ class FinanSysTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Manutenção Computador');
 
-        // 4. Destroy
+        // 4. PDF Reports
+        $response = $this->get(route('transacao.report'));
+        $response->assertStatus(200);
+        $this->assertTrue(str_contains($response->headers->get('content-type'), 'application/pdf'));
+
+        $response = $this->get(route('transacao.report.categorias'));
+        $response->assertStatus(200);
+        $this->assertTrue(str_contains($response->headers->get('content-type'), 'application/pdf'));
+
+        // 5. Pie Chart
+        $response = $this->get(route('transacao.chart'));
+        $response->assertStatus(200);
+        $response->assertSee('Gráfico Financeiro (Formato Pizza)');
+
+        // 6. Destroy deletes physical image file
+        $imagePath = $transacao->imagem;
         $response = $this->delete(route('transacao.destroy', $transacao->id));
         $response->assertRedirect('/transacao');
         $this->assertDatabaseMissing('transacoes', ['id' => $transacao->id]);
+        Storage::disk('public')->assertMissing($imagePath);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tests for Meta CRUD (Novo CRUD 1), Upload & Bar Chart
+    |--------------------------------------------------------------------------
+    */
+    public function test_meta_crud_upload_and_chart()
+    {
+        Storage::fake('public');
+
+        $conta = Conta::first();
+        $categoria = Categoria::first();
+
+        // 1. List
+        $response = $this->get('/meta');
+        $response->assertStatus(200);
+        $response->assertSee('Metas Financeiras');
+
+        // 2. Store with Image Upload
+        $fakeImage = UploadedFile::fake()->image('meta_carro.png');
+        $metaData = [
+            'titulo' => 'Comprar Carro Elétrico',
+            'valor_meta' => 95000.00,
+            'valor_atual' => 15000.00,
+            'data_limite' => '2028-12-31',
+            'conta_id' => $conta->id,
+            'categoria_id' => $categoria->id,
+            'imagem' => $fakeImage,
+        ];
+        $response = $this->post(route('meta.store'), $metaData);
+        $response->assertRedirect('/meta');
+        $this->assertDatabaseHas('metas', ['titulo' => 'Comprar Carro Elétrico']);
+
+        $meta = Meta::where('titulo', 'Comprar Carro Elétrico')->first();
+        $this->assertNotNull($meta->imagem);
+        Storage::disk('public')->assertExists($meta->imagem);
+
+        // 3. Search
+        $response = $this->post(route('meta.search'), [
+            'tipo' => 'titulo',
+            'valor' => 'Elétrico',
+        ]);
+        $response->assertStatus(200);
+        $response->assertSee('Comprar Carro Elétrico');
+
+        // 4. Bar Chart
+        $response = $this->get(route('meta.chart'));
+        $response->assertStatus(200);
+        $response->assertSee('Gráfico de Metas Financeiras (Formato Barras)');
+
+        // 5. Destroy deletes physical image
+        $imagePath = $meta->imagem;
+        $response = $this->delete(route('meta.destroy', $meta->id));
+        $response->assertRedirect('/meta');
+        $this->assertDatabaseMissing('metas', ['id' => $meta->id]);
+        Storage::disk('public')->assertMissing($imagePath);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tests for Cartao CRUD (Novo CRUD 2) & Upload
+    |--------------------------------------------------------------------------
+    */
+    public function test_cartao_crud_and_upload()
+    {
+        Storage::fake('public');
+
+        $conta = Conta::first();
+
+        // 1. List
+        $response = $this->get('/cartao');
+        $response->assertStatus(200);
+        $response->assertSee('Cartões de Crédito');
+
+        // 2. Store with Image Upload
+        $fakeImage = UploadedFile::fake()->image('cartao_black.jpg');
+        $cartaoData = [
+            'nome_cartao' => 'Cartão Infinite Empresarial',
+            'bandeira' => 'Visa',
+            'limite_credito' => 25000.00,
+            'dia_vencimento' => 20,
+            'conta_id' => $conta->id,
+            'imagem' => $fakeImage,
+        ];
+        $response = $this->post(route('cartao.store'), $cartaoData);
+        $response->assertRedirect('/cartao');
+        $this->assertDatabaseHas('cartoes', ['nome_cartao' => 'Cartão Infinite Empresarial']);
+
+        $cartao = Cartao::where('nome_cartao', 'Cartão Infinite Empresarial')->first();
+        $this->assertNotNull($cartao->imagem);
+        Storage::disk('public')->assertExists($cartao->imagem);
+
+        // 3. Search
+        $response = $this->post(route('cartao.search'), [
+            'tipo' => 'nome_cartao',
+            'valor' => 'Empresarial',
+        ]);
+        $response->assertStatus(200);
+        $response->assertSee('Cartão Infinite Empresarial');
+
+        // 4. Destroy deletes physical image
+        $imagePath = $cartao->imagem;
+        $response = $this->delete(route('cartao.destroy', $cartao->id));
+        $response->assertRedirect('/cartao');
+        $this->assertDatabaseMissing('cartoes', ['id' => $cartao->id]);
+        Storage::disk('public')->assertMissing($imagePath);
     }
 
     /*

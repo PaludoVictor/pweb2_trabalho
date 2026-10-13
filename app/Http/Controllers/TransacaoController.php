@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Transacao;
 use App\Models\Conta;
 use App\Models\Categoria;
+use App\Charts\TransacaoCategoriaChart;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class TransacaoController extends Controller
 {
@@ -33,6 +36,7 @@ class TransacaoController extends Controller
             'metodo_pagamento' => 'required',
             'conta_id' => 'required|exists:contas,id',
             'categoria_id' => 'required|exists:categorias,id',
+            'imagem' => 'nullable|image|mimes:png,jpg,jpeg',
         ], [
             'descricao_movimento.required' => 'A descrição da transação é obrigatória.',
             'valor_transacao.required' => 'O valor da transação é obrigatório.',
@@ -45,6 +49,8 @@ class TransacaoController extends Controller
             'conta_id.exists' => 'A conta selecionada é inválida.',
             'categoria_id.required' => 'Selecione uma categoria.',
             'categoria_id.exists' => 'A categoria selecionada é inválida.',
+            'imagem.image' => 'O comprovante deve ser um arquivo de imagem.',
+            'imagem.mimes' => 'O comprovante deve ser das extensões: PNG, JPEG, JPG.',
         ]);
     }
 
@@ -52,9 +58,19 @@ class TransacaoController extends Controller
     {
         $this->validateForm($request);
 
-        Transacao::create($request->all());
+        $data = $request->all();
+        $imagem = $request->file('imagem');
 
-        return redirect('transacao');
+        if ($imagem) {
+            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
+            $diretorio = "imagem/transacao/";
+            $imagem->storeAs($diretorio, $nome_imagem, 'public');
+            $data['imagem'] = $diretorio . $nome_imagem;
+        }
+
+        Transacao::create($data);
+
+        return redirect('transacao')->with('success', 'Registro Salvo com sucesso!');
     }
 
     public function edit($id)
@@ -75,19 +91,40 @@ class TransacaoController extends Controller
     {
         $this->validateForm($request);
 
-        $transacao = Transacao::find($id);
-        if ($transacao) {
-            $transacao->update($request->all());
+        $transacao = Transacao::findOrFail($id);
+        $data = $request->all();
+        $imagem = $request->file('imagem');
+
+        if ($imagem) {
+            if (!empty($transacao->imagem) && Storage::disk('public')->exists($transacao->imagem)) {
+                Storage::disk('public')->delete($transacao->imagem);
+            }
+
+            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
+            $diretorio = "imagem/transacao/";
+            $imagem->storeAs($diretorio, $nome_imagem, 'public');
+            $data['imagem'] = $diretorio . $nome_imagem;
         }
 
-        return redirect('transacao');
+        $transacao->update($data);
+
+        return redirect('transacao')->with('success', 'Registro Atualizado com sucesso!');
     }
 
     public function destroy($id)
     {
-        Transacao::destroy($id);
+        $transacao = Transacao::find($id);
 
-        return redirect('transacao');
+        if ($transacao) {
+            // Exclui o arquivo do comprovante se existir
+            if (!empty($transacao->imagem) && Storage::disk('public')->exists($transacao->imagem)) {
+                Storage::disk('public')->delete($transacao->imagem);
+            }
+
+            Transacao::destroy($id);
+        }
+
+        return redirect('transacao')->with('success', 'Registro removido com sucesso!');
     }
 
     public function search(Request $request)
@@ -122,5 +159,40 @@ class TransacaoController extends Controller
         }
 
         return view('transacao.list', compact('dados'));
+    }
+
+    public function report()
+    {
+        $transacoes = Transacao::with(['conta', 'categoria'])->orderBy('data_competencia', 'desc')->get();
+
+        $data = [
+            'titulo' => 'Relatório Listagem Geral de Transações',
+            'date' => date('d/m/Y'),
+            'dados' => $transacoes
+        ];
+
+        $pdf = Pdf::loadView('transacao.report', $data);
+
+        return $pdf->download('relatorio_transacoes.pdf');
+    }
+
+    public function reportCategorias()
+    {
+        $categorias = Categoria::with('transacoes.conta')->orderBy('nome_categoria')->get();
+
+        $data = [
+            'titulo' => 'Relatório de Transações por Categoria',
+            'date' => date('d/m/Y'),
+            'dados' => $categorias
+        ];
+
+        $pdf = Pdf::loadView('transacao.reportCategorias', $data);
+
+        return $pdf->download('relatorio_transacoes_por_categoria.pdf');
+    }
+
+    public function chart(TransacaoCategoriaChart $chart)
+    {
+        return view('transacao.chart', ['chart' => $chart->build()]);
     }
 }

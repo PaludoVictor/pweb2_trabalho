@@ -24,6 +24,16 @@
                 <i class="fa-solid fa-arrow-right-arrow-left me-2"></i> Transações
             </a>
         </li>
+        <li>
+            <a href="{{ url('meta') }}" class="nav-link {{ Request::is('meta*') ? 'active-link' : '' }}">
+                <i class="fa-solid fa-bullseye me-2"></i> Metas Financeiras
+            </a>
+        </li>
+        <li>
+            <a href="{{ url('cartao') }}" class="nav-link {{ Request::is('cartao*') ? 'active-link' : '' }}">
+                <i class="fa-solid fa-credit-card me-2"></i> Cartões de Crédito
+            </a>
+        </li>
     </ul>
     <hr class="border-secondary">
     <div class="dropdown">
