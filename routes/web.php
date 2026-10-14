@@ -52,7 +52,8 @@ Route::put('/transacao/update/{id}', [TransacaoController::class, 'update'])->na
 Route::delete('/transacao/{id}', [TransacaoController::class, 'destroy'])->name('transacao.destroy');
 Route::post('/transacao/search', [TransacaoController::class, 'search'])->name('transacao.search');
 
-// Gráfico de Metas
+// Relatório PDF e Gráfico de Metas
+Route::get('/meta/report', [MetaController::class, 'report'])->name('meta.report');
 Route::get('/meta/chart', [MetaController::class, 'chart'])->name('meta.chart');
 
 // CRUD Metas Financeiras (Novo CRUD 1)

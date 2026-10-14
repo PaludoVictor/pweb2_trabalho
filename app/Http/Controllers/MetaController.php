@@ -8,6 +8,7 @@ use App\Models\Categoria;
 use App\Charts\MetaFinanceiraChart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MetaController extends Controller
 {
@@ -157,6 +158,21 @@ class MetaController extends Controller
         }
 
         return view('meta.list', compact('dados'));
+    }
+
+    public function report()
+    {
+        $metas = Meta::with(['conta', 'categoria'])->orderBy('id')->get();
+
+        $data = [
+            'titulo' => 'Relatório de Metas Financeiras',
+            'date' => date('d/m/Y'),
+            'dados' => $metas
+        ];
+
+        $pdf = Pdf::loadView('meta.report', $data);
+
+        return $pdf->download('relatorio_metas_financeiras.pdf');
     }
 
     public function chart(MetaFinanceiraChart $chart)

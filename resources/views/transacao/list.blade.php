@@ -5,22 +5,17 @@
 @section('conteudo')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gerenciar Transações</h2>
-    <div>
-        <a href="{{ url('transacao/create') }}" class="btn btn-success">+ Nova Transação</a>
-        <a href="{{ route('transacao.report') }}" class="btn btn-danger"><i class="fa-solid fa-file-pdf me-1"></i> Relatório PDF</a>
-        <a href="{{ route('transacao.report.categorias') }}" class="btn btn-danger"><i class="fa-solid fa-file-pdf me-1"></i> Relatório Categorias</a>
-        <a href="{{ route('transacao.chart') }}" class="btn btn-warning"><i class="fa-solid fa-chart-pie me-1"></i> Gráfico</a>
-    </div>
+    <a href="{{ url('transacao/create') }}" class="btn btn-primary">+ Nova Transação</a>
 </div>
 
 <form action="{{ route('transacao.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
         <div class="col-md-9">
-            <input type="text" name="valor" class="form-control" placeholder="Pesquisar por descrição da transação...">
+            <input type="text" name="valor" class="form-control" placeholder="Buscar transação por descrição...">
         </div>
         <div class="col-md-3">
-            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i> Pesquisar</button>
+            <button class="btn btn-primary" type="submit">Pesquisar</button>
             <a href="{{ url('transacao') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
     </div>
@@ -28,11 +23,9 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <table class="table table-hover align-middle">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Comprovante</th>
                     <th>Data</th>
                     <th>Descrição</th>
                     <th>Conta</th>
@@ -44,14 +37,7 @@
             </thead>
             <tbody>
                 @forelse ($dados as $t)
-                @php
-                    $imagemComprovante = !empty($t->imagem) ? $t->imagem : 'sem_imagem.jpg';
-                @endphp
                 <tr>
-                    <td>{{ $t->id }}</td>
-                    <td>
-                        <img src="/storage/{{ $imagemComprovante }}" class="rounded shadow-sm" width="45" height="45" style="object-fit: cover;" alt="Comprovante">
-                    </td>
                     <td>{{ date('d/m/Y', strtotime($t->data_competencia)) }}</td>
                     <td>{{ $t->descricao_movimento }}</td>
                     <td>{{ $t->conta->nome_instituicao ?? 'N/A' }} ({{ $t->conta->numero_conta ?? '' }})</td>
@@ -71,13 +57,13 @@
                         <form action="{{ route('transacao.destroy', $t->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja excluir esta transação?');">Excluir</button>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?');">Excluir</button>
                         </form>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-center py-3 text-muted">Nenhuma transação encontrada.</td>
+                    <td colspan="7" class="text-center py-3 text-muted">Nenhuma transação encontrada.</td>
                 </tr>
                 @endforelse
             </tbody>

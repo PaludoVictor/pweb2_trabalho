@@ -5,17 +5,17 @@
 @section('conteudo')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gerenciar Usuários</h2>
-    <a href="{{ url('usuario/create') }}" class="btn btn-success">+ Novo Usuário</a>
+    <a href="{{ url('usuario/create') }}" class="btn btn-primary">+ Novo Usuário</a>
 </div>
 
 <form action="{{ route('usuario.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
         <div class="col-md-9">
-            <input type="text" name="valor" class="form-control" placeholder="Pesquisar por nome do usuário...">
+            <input type="text" name="valor" class="form-control" placeholder="Buscar usuário por nome...">
         </div>
         <div class="col-md-3">
-            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i> Pesquisar</button>
+            <button class="btn btn-primary" type="submit">Pesquisar</button>
             <a href="{{ url('usuario') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
     </div>
@@ -23,10 +23,10 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <table class="table table-hover align-middle">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>ID</th>
                     <th>Nome</th>
                     <th>Telefone</th>
                     <th>E-mail</th>
@@ -38,18 +38,16 @@
                 @forelse ($dados as $u)
                 <tr>
                     <td>{{ $u->id }}</td>
-                    <td class="fw-semibold">
-                        <i class="fa-solid fa-user-circle text-secondary me-1"></i> {{ $u->nome }}
-                    </td>
+                    <td>{{ $u->nome }}</td>
                     <td>{{ $u->telefone }}</td>
                     <td>{{ $u->email }}</td>
-                    <td><code>{{ $u->login }}</code></td>
+                    <td>{{ $u->login }}</td>
                     <td>
                         <a href="{{ route('usuario.edit', $u->id) }}" class="btn btn-sm btn-warning">Editar</a>
                         <form action="{{ route('usuario.destroy', $u->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja realmente excluir este usuário?');">Excluir</button>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?');">Excluir</button>
                         </form>
                     </td>
                 </tr>

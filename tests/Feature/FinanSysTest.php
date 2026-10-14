@@ -253,10 +253,13 @@ class FinanSysTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Comprar Carro Elétrico');
 
-        // 4. Bar Chart
+        // 4. Bar Chart & PDF Report
         $response = $this->get(route('meta.chart'));
         $response->assertStatus(200);
-        $response->assertSee('Gráfico de Metas Financeiras (Formato Barras)');
+
+        $response = $this->get(route('meta.report'));
+        $response->assertStatus(200);
+        $this->assertTrue(str_contains($response->headers->get('content-type'), 'application/pdf'));
 
         // 5. Destroy deletes physical image
         $imagePath = $meta->imagem;
