@@ -32,3 +32,4 @@
 {{ $graficoGastos->script() }}
 {{ $graficoMetas->script() }}
 @stop
+
