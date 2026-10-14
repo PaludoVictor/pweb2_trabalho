@@ -11,15 +11,8 @@
 <form action="{{ route('cartao.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-3">
-            <select name="tipo" class="form-select">
-                <option value="nome_cartao">Nome do Cartão</option>
-                <option value="bandeira">Bandeira</option>
-                <option value="conta">Conta Vinculada</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <input type="text" name="valor" class="form-control" placeholder="Pesquisar cartão...">
+        <div class="col-md-9">
+            <input type="text" name="valor" class="form-control" placeholder="Pesquisar por nome do cartão...">
         </div>
         <div class="col-md-3">
             <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i> Pesquisar</button>
@@ -79,4 +72,3 @@
     </div>
 </div>
 @stop
-

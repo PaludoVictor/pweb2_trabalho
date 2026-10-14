@@ -27,9 +27,9 @@ class FinanSysTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('Painel de Controle Financeiro');
-        $response->assertSee('Total em Contas');
-        $response->assertSee('Distribuição por Categoria');
+        $response->assertSee('Dashboard Financeiro');
+        $response->assertSee('Gastos por Categoria');
+        $response->assertSee('Metas Financeiras');
     }
 
     /*

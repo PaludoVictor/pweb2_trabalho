@@ -15,24 +15,23 @@ class MetaFinanceiraChart
         $valoresMeta = [];
         $valoresAtuais = [];
 
-        foreach ($metas as $meta) {
-            $nomesMetas[] = $meta->titulo;
-            $valoresMeta[] = (float) $meta->valor_meta;
-            $valoresAtuais[] = (float) $meta->valor_atual;
+        foreach ($metas as $item) {
+            $nomesMetas[] = $item->titulo;
+            $valoresMeta[] = (float) $item->valor_meta;
+            $valoresAtuais[] = (float) $item->valor_atual;
         }
 
         if (empty($nomesMetas)) {
-            $nomesMetas = ['Exemplo'];
-            $valoresMeta = [1000];
-            $valoresAtuais = [500];
+            $nomesMetas = ['Reserva', 'Viagem', 'Notebook'];
+            $valoresMeta = [5000, 3000, 4500];
+            $valoresAtuais = [2500, 1800, 3200];
         }
 
         return (new LarapexChart)->barChart()
-            ->setTitle('Progresso das Metas Financeiras')
-            ->setSubtitle('Valor Alvo da Meta vs. Valor Já Acumulado (R$)')
-            ->addData($valoresMeta, 'Valor da Meta (Alvo)')
-            ->addData($valoresAtuais, 'Valor Atual (Acumulado)')
+            ->setTitle('Metas Financeiras')
+            ->setSubtitle('Valor Alvo vs. Economizado (R$)')
+            ->addData($valoresMeta, 'Valor Meta')
+            ->addData($valoresAtuais, 'Valor Atual')
             ->setXAxis($nomesMetas);
     }
 }
-

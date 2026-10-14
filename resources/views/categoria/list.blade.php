@@ -11,14 +11,8 @@
 <form action="{{ route('categoria.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-3">
-            <select name="tipo" class="form-select">
-                <option value="nome_categoria">Nome da Categoria</option>
-                <option value="tipo_despesa">Tipo de Despesa</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar categoria por nome ou tipo...">
+        <div class="col-md-9">
+            <input type="text" name="valor" class="form-control" placeholder="Pesquisar por nome da categoria...">
         </div>
         <div class="col-md-3">
             <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i> Pesquisar</button>

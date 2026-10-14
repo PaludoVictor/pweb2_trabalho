@@ -9,30 +9,26 @@ class TransacaoCategoriaChart
 {
     public function build(): \ArielMejiaDev\LarapexCharts\PieChart
     {
-        $categorias = Categoria::with('transacoes')->get();
+        $categorias = Categoria::all();
 
         $nomesCategorias = [];
-        $valoresTotais = [];
+        $valoresGastos = [];
 
         foreach ($categorias as $item) {
-            $total = (float) $item->transacoes->sum('valor_transacao');
-            // Se nao houver valor, usamos a quantidade ou 0
-            if ($total > 0 || $item->transacoes->count() > 0) {
-                $nomesCategorias[] = $item->nome_categoria;
-                $valoresTotais[] = $total > 0 ? $total : 1.0;
-            }
+            $nomesCategorias[] = $item->nome_categoria;
+            $valoresGastos[] = (float) $item->transacoes->sum('valor_transacao');
         }
 
-        if (empty($nomesCategorias)) {
-            $nomesCategorias = ['Sem dados'];
-            $valoresTotais = [1];
+        // Se nao houver gastos cadastrados, exibe valores ilustrativos
+        if (empty(array_filter($valoresGastos))) {
+            $valoresGastos = [100, 200, 150, 80, 50];
+            $nomesCategorias = ['Alimentação', 'Moradia', 'Transporte', 'Lazer', 'Estudos'];
         }
 
         return (new LarapexChart)->pieChart()
-            ->setTitle('Despesas por Categoria')
-            ->setSubtitle('Distribuição dos Gastos Cadastrados (R$)')
-            ->addData($valoresTotais)
+            ->setTitle('Gastos por Categoria')
+            ->setSubtitle('Total de Despesas (R$)')
+            ->addData($valoresGastos)
             ->setLabels($nomesCategorias);
     }
 }
-
