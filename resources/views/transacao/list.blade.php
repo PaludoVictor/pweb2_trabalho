@@ -5,7 +5,11 @@
 @section('conteudo')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gerenciar Transações</h2>
-    <a href="{{ url('transacao/create') }}" class="btn btn-primary">+ Nova Transação</a>
+    <div>
+        <a href="{{ url('transacao/create') }}" class="btn btn-success">Nova Transação</a>
+        <a href="{{ route('transacao.report.categorias') }}" class="btn btn-danger">Relatório</a>
+        <a href="{{ route('transacao.chart') }}" class="btn btn-warning">Gráfico</a>
+    </div>
 </div>
 
 <form action="{{ route('transacao.search') }}" method="POST" class="mb-4">

@@ -5,7 +5,10 @@
 @section('conteudo')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Metas Financeiras</h2>
-    <a href="{{ url('meta/create') }}" class="btn btn-primary">+ Nova Meta</a>
+    <div>
+        <a href="{{ url('meta/create') }}" class="btn btn-success">Nova Meta</a>
+        <a href="{{ route('meta.chart') }}" class="btn btn-warning">Gráfico</a>
+    </div>
 </div>
 
 <form action="{{ route('meta.search') }}" method="POST" class="mb-4">

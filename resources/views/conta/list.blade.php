@@ -5,7 +5,10 @@
 @section('conteudo')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gerenciar Contas Bancárias</h2>
-    <a href="{{ url('conta/create') }}" class="btn btn-primary">+ Nova Conta</a>
+    <div>
+        <a href="{{ url('conta/create') }}" class="btn btn-success">Nova Conta</a>
+        <a href="{{ route('conta.report') }}" class="btn btn-danger">Relatório</a>
+    </div>
 </div>
 
 <form action="{{ route('conta.search') }}" method="POST" class="mb-4">

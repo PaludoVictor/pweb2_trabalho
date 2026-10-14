@@ -83,6 +83,11 @@ class FinanSysTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Banco C6 Bank');
 
+        // PDF Report
+        $response = $this->get(route('conta.report'));
+        $response->assertStatus(200);
+        $this->assertTrue(str_contains($response->headers->get('content-type'), 'application/pdf'));
+
         // 7. Destroy (without children)
         $response = $this->delete(route('conta.destroy', $conta->id));
         $response->assertRedirect('/conta');
@@ -253,13 +258,9 @@ class FinanSysTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Comprar Carro Elétrico');
 
-        // 4. Bar Chart & PDF Report
+        // 4. Bar Chart
         $response = $this->get(route('meta.chart'));
         $response->assertStatus(200);
-
-        $response = $this->get(route('meta.report'));
-        $response->assertStatus(200);
-        $this->assertTrue(str_contains($response->headers->get('content-type'), 'application/pdf'));
 
         // 5. Destroy deletes physical image
         $imagePath = $meta->imagem;

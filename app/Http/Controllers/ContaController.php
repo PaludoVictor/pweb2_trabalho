@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Conta;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ContaController extends Controller
 {
@@ -96,5 +97,20 @@ class ContaController extends Controller
         }
 
         return view('conta.list', compact('dados'));
+    }
+
+    public function report()
+    {
+        $contas = Conta::orderBy('nome_instituicao')->get();
+
+        $data = [
+            'titulo' => 'Relatório Listagem de Contas Bancárias',
+            'date' => date('d/m/Y'),
+            'dados' => $contas
+        ];
+
+        $pdf = Pdf::loadView('conta.report', $data);
+
+        return $pdf->download('relatorio_contas.pdf');
     }
 }

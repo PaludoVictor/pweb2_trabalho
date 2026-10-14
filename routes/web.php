@@ -21,6 +21,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 // CRUD Conta
+Route::get('/conta/report', [ContaController::class, 'report'])->name('conta.report');
 Route::get('/conta', [ContaController::class, 'index']);
 Route::get('/conta/create', [ContaController::class, 'create']);
 Route::post('/conta/store', [ContaController::class, 'store'])->name('conta.store');
@@ -52,8 +53,7 @@ Route::put('/transacao/update/{id}', [TransacaoController::class, 'update'])->na
 Route::delete('/transacao/{id}', [TransacaoController::class, 'destroy'])->name('transacao.destroy');
 Route::post('/transacao/search', [TransacaoController::class, 'search'])->name('transacao.search');
 
-// Relatório PDF e Gráfico de Metas
-Route::get('/meta/report', [MetaController::class, 'report'])->name('meta.report');
+// Gráfico de Metas
 Route::get('/meta/chart', [MetaController::class, 'chart'])->name('meta.chart');
 
 // CRUD Metas Financeiras (Novo CRUD 1)

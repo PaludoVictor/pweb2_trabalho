@@ -160,21 +160,6 @@ class MetaController extends Controller
         return view('meta.list', compact('dados'));
     }
 
-    public function report()
-    {
-        $metas = Meta::with(['conta', 'categoria'])->orderBy('id')->get();
-
-        $data = [
-            'titulo' => 'Relatório de Metas Financeiras',
-            'date' => date('d/m/Y'),
-            'dados' => $metas
-        ];
-
-        $pdf = Pdf::loadView('meta.report', $data);
-
-        return $pdf->download('relatorio_metas_financeiras.pdf');
-    }
-
     public function chart(MetaFinanceiraChart $chart)
     {
         return view('meta.chart', ['chart' => $chart->build()]);
