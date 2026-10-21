@@ -16,7 +16,6 @@ class Meta extends Model
         'valor_meta',
         'valor_atual',
         'data_limite',
-        'imagem',
         'conta_id',
         'categoria_id',
     ];
@@ -39,4 +38,3 @@ class Meta extends Model
         return $this->belongsTo(Categoria::class, 'categoria_id');
     }
 }
-

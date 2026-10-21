@@ -34,12 +34,21 @@
                 <i class="fa-solid fa-credit-card me-2"></i> Cartões de Crédito
             </a>
         </li>
+        <li>
+            <a href="{{ url('usuario') }}" class="nav-link {{ Request::is('usuario*') ? 'active-link' : '' }}">
+                <i class="fa-solid fa-users me-2"></i> Usuários
+            </a>
+        </li>
     </ul>
     <hr class="border-secondary">
     <div class="dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle px-2" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
-                <i class="fa-solid fa-user text-white small"></i>
+            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-2 overflow-hidden" style="width: 32px; height: 32px;">
+                @if (session('usuario_imagem'))
+                    <img src="/storage/{{ session('usuario_imagem') }}" width="32" height="32" style="object-fit: cover;" alt="Foto">
+                @else
+                    <i class="fa-solid fa-user text-white small"></i>
+                @endif
             </div>
             <strong>{{ session('usuario_nome', 'Admin') }}</strong>
         </a>

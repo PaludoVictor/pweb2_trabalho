@@ -16,6 +16,8 @@ class UsuarioSeeder extends Seeder
             ['login' => 'admin'],
             [
                 'nome' => 'Administrador',
+                'cpf' => '000.000.000-00',
+                'imagem' => null,
                 'telefone' => '(49) 99999-9999',
                 'email' => 'admin@finansys.com',
                 'login' => 'admin',
@@ -27,6 +29,8 @@ class UsuarioSeeder extends Seeder
             ['login' => 'joao'],
             [
                 'nome' => 'João Silva',
+                'cpf' => '111.111.111-11',
+                'imagem' => null,
                 'telefone' => '(49) 98888-8888',
                 'email' => 'joao@finansys.com',
                 'login' => 'joao',

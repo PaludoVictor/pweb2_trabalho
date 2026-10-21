@@ -7,7 +7,6 @@ use App\Models\Conta;
 use App\Models\Categoria;
 use App\Charts\MetaFinanceiraChart;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class MetaController extends Controller
@@ -36,7 +35,6 @@ class MetaController extends Controller
             'data_limite' => 'required|date',
             'conta_id' => 'required|exists:contas,id',
             'categoria_id' => 'required|exists:categorias,id',
-            'imagem' => 'nullable|image|mimes:png,jpg,jpeg',
         ], [
             'titulo.required' => "O :attribute é obrigatório",
             'valor_meta.required' => "O :attribute é obrigatório",
@@ -49,8 +47,6 @@ class MetaController extends Controller
             'conta_id.exists' => "A conta selecionada é inválida",
             'categoria_id.required' => "A categoria vinculada é obrigatória",
             'categoria_id.exists' => "A categoria selecionada é inválida",
-            'imagem.image' => "O arquivo de :attribute deve ser uma imagem válida",
-            'imagem.mimes' => "A imagem deve ser das extensões: PNG, JPEG, JPG",
         ]);
     }
 
@@ -59,14 +55,6 @@ class MetaController extends Controller
         $this->validateForm($request);
 
         $data = $request->all();
-        $imagem = $request->file('imagem');
-
-        if ($imagem) {
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/meta/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
-        }
 
         if (empty($data['valor_atual'])) {
             $data['valor_atual'] = 0.00;
@@ -97,19 +85,6 @@ class MetaController extends Controller
 
         $meta = Meta::findOrFail($id);
         $data = $request->all();
-        $imagem = $request->file('imagem');
-
-        if ($imagem) {
-            // Se já existia uma imagem anterior, remove o arquivo físico antigo
-            if (!empty($meta->imagem) && Storage::disk('public')->exists($meta->imagem)) {
-                Storage::disk('public')->delete($meta->imagem);
-            }
-
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/meta/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
-        }
 
         $meta->update($data);
 
@@ -118,16 +93,7 @@ class MetaController extends Controller
 
     public function destroy($id)
     {
-        $meta = Meta::find($id);
-
-        if ($meta) {
-            // Exclui o arquivo físico ao deletar o registro (Requisito do Edital)
-            if (!empty($meta->imagem) && Storage::disk('public')->exists($meta->imagem)) {
-                Storage::disk('public')->delete($meta->imagem);
-            }
-
-            Meta::destroy($id);
-        }
+        Meta::destroy($id);
 
         return redirect('meta')->with("success", 'Registro removido com sucesso!');
     }
@@ -165,4 +131,3 @@ class MetaController extends Controller
         return view('meta.chart', ['chart' => $chart->build()]);
     }
 }
-

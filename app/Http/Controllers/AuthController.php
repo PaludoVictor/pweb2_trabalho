@@ -37,6 +37,7 @@ class AuthController extends Controller
                 'usuario_nome' => $usuario->nome,
                 'usuario_login' => $usuario->login,
                 'usuario_email' => $usuario->email,
+                'usuario_imagem' => $usuario->imagem,
             ]);
 
             return redirect('/');
@@ -58,6 +59,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'nome' => 'required',
+            'cpf' => 'nullable',
             'telefone' => 'required',
             'email' => 'required|email|unique:usuarios,email',
             'login' => 'required|unique:usuarios,login',
@@ -81,7 +83,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        session()->forget(['usuario_logado', 'usuario_id', 'usuario_nome', 'usuario_login', 'usuario_email']);
+        session()->forget(['usuario_logado', 'usuario_id', 'usuario_nome', 'usuario_login', 'usuario_email', 'usuario_imagem']);
         session()->flush();
 
         return redirect('/login');

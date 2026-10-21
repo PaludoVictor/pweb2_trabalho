@@ -11,8 +11,16 @@
 <form action="{{ route('usuario.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-9">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar usuário por nome...">
+        <div class="col-md-3">
+            <select name="tipo" class="form-select">
+                <option value="nome">Nome</option>
+                <option value="cpf">CPF</option>
+                <option value="email">E-mail</option>
+                <option value="login">Login</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="valor" class="form-control" placeholder="Pesquisar usuário...">
         </div>
         <div class="col-md-3">
             <button class="btn btn-primary" type="submit">Pesquisar</button>
@@ -23,11 +31,12 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <table class="table table-hover">
+        <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Foto</th>
                     <th>Nome</th>
+                    <th>CPF</th>
                     <th>Telefone</th>
                     <th>E-mail</th>
                     <th>Login</th>
@@ -36,12 +45,18 @@
             </thead>
             <tbody>
                 @forelse ($dados as $u)
+                @php
+                    $nome_imagem = !empty($u->imagem) ? $u->imagem : 'sem_imagem.jpg';
+                @endphp
                 <tr>
-                    <td>{{ $u->id }}</td>
-                    <td>{{ $u->nome }}</td>
+                    <td>
+                        <img src="/storage/{{ $nome_imagem }}" width="42" height="42" class="rounded-circle shadow-sm" style="object-fit: cover; border: 2px solid #e5e7eb;" alt="Foto">
+                    </td>
+                    <td><strong>{{ $u->nome }}</strong></td>
+                    <td>{{ $u->cpf ?? '-' }}</td>
                     <td>{{ $u->telefone }}</td>
                     <td>{{ $u->email }}</td>
-                    <td>{{ $u->login }}</td>
+                    <td><span class="badge bg-secondary">{{ $u->login }}</span></td>
                     <td>
                         <a href="{{ route('usuario.edit', $u->id) }}" class="btn btn-sm btn-warning">Editar</a>
                         <form action="{{ route('usuario.destroy', $u->id) }}" method="POST" class="d-inline">
@@ -53,7 +68,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-3 text-muted">Nenhum usuário cadastrado.</td>
+                    <td colspan="7" class="text-center py-3 text-muted">Nenhum usuário cadastrado.</td>
                 </tr>
                 @endforelse
             </tbody>

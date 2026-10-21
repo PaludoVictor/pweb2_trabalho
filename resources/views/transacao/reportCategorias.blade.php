@@ -8,7 +8,6 @@
     <style>
         body { font-size: 12px; font-family: sans-serif; }
         .table th, .table td { padding: 5px; }
-        .categoria-header { background-color: #f8f9fa; border-left: 4px solid #10b981; padding: 6px 12px; margin-top: 15px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -23,7 +22,7 @@
     <div class="row">
         <div class="col-12">
             @foreach ($dados as $cat)
-                <div class="categoria-header">
+                <div class="mt-3 mb-1">
                     <strong>Categoria: {{ $cat->nome_categoria }}</strong> 
                     <span class="text-muted">({{ $cat->tipo_despesa }} - Limite Orçado: R$ {{ number_format($cat->limite_orcamento, 2, ',', '.') }})</span>
                 </div>
@@ -70,4 +69,3 @@
     </div>
 </body>
 </html>
-

@@ -33,6 +33,10 @@
                                 <input type="text" name="nome" class="form-control" value="{{ old('nome') }}" required placeholder="Digite seu nome completo">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">CPF</label>
+                                <input type="text" name="cpf" class="form-control" value="{{ old('cpf') }}" placeholder="000.000.000-00">
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Telefone</label>
                                 <input type="text" name="telefone" class="form-control" value="{{ old('telefone') }}" required placeholder="(49) 99999-9999">
                             </div>

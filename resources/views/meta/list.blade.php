@@ -29,7 +29,6 @@
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th>Foto</th>
                     <th>Título</th>
                     <th>Conta</th>
                     <th>Categoria</th>
@@ -41,13 +40,7 @@
             </thead>
             <tbody>
                 @forelse ($dados as $item)
-                @php
-                    $nome_imagem = !empty($item->imagem) ? $item->imagem : 'sem_imagem.jpg';
-                @endphp
                 <tr>
-                    <td>
-                        <img src="/storage/{{ $nome_imagem }}" width="40" height="40" style="object-fit: cover; border-radius: 4px;" alt="Foto">
-                    </td>
                     <td>{{ $item->titulo }}</td>
                     <td>{{ $item->conta->nome_instituicao ?? 'N/A' }}</td>
                     <td>{{ $item->categoria->nome_categoria ?? 'Sem Categoria' }}</td>
@@ -65,7 +58,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center py-3 text-muted">Nenhuma meta financeira cadastrada.</td>
+                    <td colspan="7" class="text-center py-3 text-muted">Nenhuma meta financeira cadastrada.</td>
                 </tr>
                 @endforelse
             </tbody>

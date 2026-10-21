@@ -9,7 +9,6 @@
     } else {
         $action = route('meta.store');
     }
-    $nome_imagem = !empty($data->imagem) ? $data->imagem : 'sem_imagem.jpg';
 @endphp
 
 <div class="mb-4">
@@ -18,7 +17,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <form action="{{ $action }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ $action }}" method="POST">
             @csrf
             @if (!empty($data->id))
                 @method('PUT')
@@ -48,7 +47,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-4">
                 <div class="col-md-6">
                     <label class="form-label">Conta Bancária de Destino</label>
                     <select name="conta_id" class="form-select" required>
@@ -75,23 +74,9 @@
                 </div>
             </div>
 
-            {{-- Upload de Imagem/Foto da Meta (Padrão Aluno de pweb2_2026_2) --}}
-            <div class="row mb-4">
-                <div class="col-md-3 text-center">
-                    <label class="form-label d-block">Foto / Ícone Atual</label>
-                    <img src="/storage/{{ $nome_imagem }}" class="img-thumbnail rounded shadow-sm" width="120" height="120" style="object-fit: cover;" alt="Imagem da Meta">
-                </div>
-                <div class="col-md-9 d-flex flex-column justify-content-center">
-                    <label class="form-label">Foto / Imagem da Meta (PNG, JPG ou JPEG)</label>
-                    <input type="file" name="imagem" class="form-control">
-                    <div class="form-text">Adicione uma imagem inspiradora para seu objetivo financeiro.</div>
-                </div>
-            </div>
-
             <button type="submit" class="btn btn-success"><i class="fa-solid fa-check me-1"></i> Salvar</button>
             <a href="{{ url('meta') }}" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 </div>
 @stop
-

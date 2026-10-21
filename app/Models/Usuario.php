@@ -13,9 +13,28 @@ class Usuario extends Model
 
     protected $fillable = [
         'nome',
+        'cpf',
+        'imagem',
+        'foto',
         'telefone',
         'email',
         'login',
-        'senha'
+        'senha',
     ];
+
+    /**
+     * Accessor para permitir o uso de $usuario->foto de forma intercambiável com $usuario->imagem
+     */
+    public function getFotoAttribute()
+    {
+        return $this->attributes['imagem'] ?? null;
+    }
+
+    /**
+     * Mutator para permitir atribuição direta através de foto
+     */
+    public function setFotoAttribute($value)
+    {
+        $this->attributes['imagem'] = $value;
+    }
 }

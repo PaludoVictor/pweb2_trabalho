@@ -216,13 +216,11 @@ class FinanSysTest extends TestCase
 
     /*
     |--------------------------------------------------------------------------
-    | Tests for Meta CRUD (Novo CRUD 1), Upload & Bar Chart
+    | Tests for Meta CRUD (Novo CRUD 1) & Bar Chart (Sem Foto)
     |--------------------------------------------------------------------------
     */
-    public function test_meta_crud_upload_and_chart()
+    public function test_meta_crud_and_chart()
     {
-        Storage::fake('public');
-
         $conta = Conta::first();
         $categoria = Categoria::first();
 
@@ -231,8 +229,7 @@ class FinanSysTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Metas Financeiras');
 
-        // 2. Store with Image Upload
-        $fakeImage = UploadedFile::fake()->image('meta_carro.png');
+        // 2. Store (sem upload de imagem conforme ajuste solicitado)
         $metaData = [
             'titulo' => 'Comprar Carro Elétrico',
             'valor_meta' => 95000.00,
@@ -240,15 +237,13 @@ class FinanSysTest extends TestCase
             'data_limite' => '2028-12-31',
             'conta_id' => $conta->id,
             'categoria_id' => $categoria->id,
-            'imagem' => $fakeImage,
         ];
         $response = $this->post(route('meta.store'), $metaData);
         $response->assertRedirect('/meta');
         $this->assertDatabaseHas('metas', ['titulo' => 'Comprar Carro Elétrico']);
 
         $meta = Meta::where('titulo', 'Comprar Carro Elétrico')->first();
-        $this->assertNotNull($meta->imagem);
-        Storage::disk('public')->assertExists($meta->imagem);
+        $this->assertNotNull($meta);
 
         // 3. Search
         $response = $this->post(route('meta.search'), [
@@ -262,12 +257,10 @@ class FinanSysTest extends TestCase
         $response = $this->get(route('meta.chart'));
         $response->assertStatus(200);
 
-        // 5. Destroy deletes physical image
-        $imagePath = $meta->imagem;
+        // 5. Destroy
         $response = $this->delete(route('meta.destroy', $meta->id));
         $response->assertRedirect('/meta');
         $this->assertDatabaseMissing('metas', ['id' => $meta->id]);
-        Storage::disk('public')->assertMissing($imagePath);
     }
 
     /*
@@ -322,34 +315,63 @@ class FinanSysTest extends TestCase
 
     /*
     |--------------------------------------------------------------------------
-    | Tests for Usuario CRUD & Auth
+    | Tests for Usuario CRUD, Upload (Foto/Imagem), CPF & Auth
     |--------------------------------------------------------------------------
     */
-    public function test_usuario_crud_and_auth()
+    public function test_usuario_crud_upload_and_auth()
     {
-        // 1. Store user
+        Storage::fake('public');
+
+        // 1. Store user com CPF e Foto
+        $fakePhoto = UploadedFile::fake()->image('perfil_lucas.jpg');
         $uData = [
             'nome' => 'Lucas Teste',
+            'cpf' => '123.456.789-00',
             'telefone' => '(49) 97777-7777',
             'email' => 'lucas@teste.com',
             'login' => 'lucastest',
             'senha' => 'senha123',
+            'imagem' => $fakePhoto,
         ];
         $response = $this->post(route('usuario.store'), $uData);
         $response->assertRedirect('/usuario');
-        $this->assertDatabaseHas('usuarios', ['login' => 'lucastest']);
+        $this->assertDatabaseHas('usuarios', [
+            'login' => 'lucastest',
+            'cpf' => '123.456.789-00',
+        ]);
 
-        // 2. Auth login
+        $usuario = Usuario::where('login', 'lucastest')->first();
+        $this->assertNotNull($usuario->imagem);
+        $this->assertEquals($usuario->imagem, $usuario->foto);
+        Storage::disk('public')->assertExists($usuario->imagem);
+
+        // 2. Search por CPF
+        $response = $this->post(route('usuario.search'), [
+            'tipo' => 'cpf',
+            'valor' => '123.456.789-00',
+        ]);
+        $response->assertStatus(200);
+        $response->assertSee('Lucas Teste');
+
+        // 3. Auth login
         $response = $this->post(route('login.post'), [
             'login' => 'lucastest',
             'senha' => 'senha123',
         ]);
         $response->assertRedirect('/');
         $this->assertTrue(session('usuario_logado') === true);
+        $this->assertEquals($usuario->imagem, session('usuario_imagem'));
 
-        // 3. Logout
+        // 4. Logout
         $response = $this->get(route('logout'));
         $response->assertRedirect('/login');
         $this->assertNull(session('usuario_logado'));
+
+        // 5. Destroy deletes physical image
+        $imagePath = $usuario->imagem;
+        $response = $this->delete(route('usuario.destroy', $usuario->id));
+        $response->assertRedirect('/usuario');
+        $this->assertDatabaseMissing('usuarios', ['id' => $usuario->id]);
+        Storage::disk('public')->assertMissing($imagePath);
     }
 }

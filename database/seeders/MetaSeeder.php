@@ -24,7 +24,6 @@ class MetaSeeder extends Seeder
                     'valor_meta' => 12000.00,
                     'valor_atual' => 5500.00,
                     'data_limite' => date('Y-m-d', strtotime('+10 months')),
-                    'imagem' => null,
                     'conta_id' => $conta1->id,
                     'categoria_id' => $catReserva->id,
                 ]
@@ -36,7 +35,6 @@ class MetaSeeder extends Seeder
                     'valor_meta' => 4500.00,
                     'valor_atual' => 3200.00,
                     'data_limite' => date('Y-m-d', strtotime('+4 months')),
-                    'imagem' => null,
                     'conta_id' => $conta2 ? $conta2->id : $conta1->id,
                     'categoria_id' => $catLazer ? $catLazer->id : $catReserva->id,
                 ]
@@ -48,7 +46,6 @@ class MetaSeeder extends Seeder
                     'valor_meta' => 6000.00,
                     'valor_atual' => 4800.00,
                     'data_limite' => date('Y-m-d', strtotime('+6 months')),
-                    'imagem' => null,
                     'conta_id' => $conta1->id,
                     'categoria_id' => $catEstudos ? $catEstudos->id : $catReserva->id,
                 ]
@@ -56,4 +53,3 @@ class MetaSeeder extends Seeder
         }
     }
 }
-
