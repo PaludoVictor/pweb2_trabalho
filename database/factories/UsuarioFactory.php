@@ -21,10 +21,11 @@ class UsuarioFactory extends Factory
     {
         return [
             'nome' => fake()->name(),
+            'cpf' => '529.982.247-25',
             'telefone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
             'login' => fake()->unique()->userName(),
-            'senha' => '123456',
+            'senha' => 'SenhaTeste123',
         ];
     }
 }

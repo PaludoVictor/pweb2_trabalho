@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('transacoes', function (Blueprint $table) {
             $table->id();
             $table->string('descricao_movimento', 150);
+            $table->text('observacao')->nullable();
+            $table->string('imagem', 150)->nullable();
             $table->decimal('valor_transacao', 10, 2);
             $table->date('data_competencia');
             $table->string('metodo_pagamento', 50);

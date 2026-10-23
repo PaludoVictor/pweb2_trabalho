@@ -9,7 +9,7 @@
     } else {
         $action = route('transacao.store');
     }
-    $nome_imagem = !empty($data->imagem) ? $data->imagem : 'sem_imagem.jpg';
+    $url_imagem = !empty($data->imagem) ? asset('storage/' . $data->imagem) : asset('images/sem_imagem.svg');
 @endphp
 
 <div class="mb-4">
@@ -90,7 +90,7 @@
             <div class="row mb-4">
                 <div class="col-md-3 text-center">
                     <label class="form-label d-block">Comprovante Atual</label>
-                    <img src="/storage/{{ $nome_imagem }}" class="img-thumbnail rounded shadow-sm" width="120" height="120" style="object-fit: cover;" alt="Comprovante">
+                    <img src="{{ $url_imagem }}" class="img-thumbnail rounded shadow-sm" width="120" height="120" style="object-fit: cover;" alt="Comprovante">
                 </div>
                 <div class="col-md-9 d-flex flex-column justify-content-center">
                     <label class="form-label">Anexar Comprovante / Recibo (PNG, JPG ou JPEG)</label>

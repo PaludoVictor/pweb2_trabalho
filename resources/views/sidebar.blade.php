@@ -56,9 +56,12 @@
             <li><a class="dropdown-item" href="{{ url('usuario') }}">Gerenciar Usuários</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
-                <a class="dropdown-item text-danger fw-bold" href="{{ route('logout') }}">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Sair
-                </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="dropdown-item text-danger fw-bold">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Sair
+                    </button>
+                </form>
             </li>
         </ul>
     </div>

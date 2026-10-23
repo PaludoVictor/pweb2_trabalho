@@ -19,7 +19,11 @@
         </div>
 
         <div class="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-            {!! $chart->container() !!}
+            @if ($temDados)
+                {!! $chart->container() !!}
+            @else
+                <p class="text-gray-600">Cadastre uma transação para visualizar o gráfico.</p>
+            @endif
         </div>
     </div>
 
@@ -27,8 +31,10 @@
         FinanSys &bull; PWEB 2 &bull; Gráficos com Larapex Charts
     </footer>
 
-    <script src="{{ $chart->cdn() }}"></script>
-    {{ $chart->script() }}
+    @if ($temDados)
+        <script src="{{ $chart->cdn() }}"></script>
+        {{ $chart->script() }}
+    @endif
 </body>
 </html>
 

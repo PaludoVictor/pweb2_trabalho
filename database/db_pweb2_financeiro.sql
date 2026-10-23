@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
 --
--- Host: localhost    Database: db_pweb2_financeiro
+-- Host: 127.0.0.1    Database: db_pweb2_financeiro
 -- ------------------------------------------------------
 -- Server version	8.0.30
 
@@ -14,6 +14,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `db_pweb2_financeiro`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `db_pweb2_financeiro` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `db_pweb2_financeiro`;
 
 --
 -- Table structure for table `cache`
@@ -83,9 +91,9 @@ CREATE TABLE `cartoes` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `cartoes_conta_id_foreign` (`conta_id`),
+  UNIQUE KEY `cartoes_conta_id_unique` (`conta_id`),
   CONSTRAINT `cartoes_conta_id_foreign` FOREIGN KEY (`conta_id`) REFERENCES `contas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +102,7 @@ CREATE TABLE `cartoes` (
 
 LOCK TABLES `cartoes` WRITE;
 /*!40000 ALTER TABLE `cartoes` DISABLE KEYS */;
-INSERT INTO `cartoes` VALUES (1,'Cartão Platinum Rewards','Mastercard',8500.00,10,NULL,1,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(2,'Cartão Visa Infinite Cashback','Visa',12000.00,15,NULL,2,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(3,'Cartão Elo Mais','Elo',3500.00,20,NULL,3,'2026-10-13 21:06:44','2026-10-13 21:06:44');
+INSERT INTO `cartoes` VALUES (1,'Cartão Platinum Rewards','Mastercard',8500.00,10,NULL,1,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(2,'Cartão Visa Infinite Cashback','Visa',12000.00,15,NULL,2,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(3,'Cartão Elo Mais','Elo',3500.00,20,NULL,3,'2026-10-23 03:33:03','2026-10-23 03:33:03');
 /*!40000 ALTER TABLE `cartoes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -124,7 +132,7 @@ CREATE TABLE `categorias` (
 
 LOCK TABLES `categorias` WRITE;
 /*!40000 ALTER TABLE `categorias` DISABLE KEYS */;
-INSERT INTO `categorias` VALUES (1,'Alimentação',NULL,'Variável',1200.00,'#10b981','2026-10-13 21:06:44','2026-10-13 21:06:44'),(2,'Moradia & Contas',NULL,'Fixa',2000.00,'#3b82f6','2026-10-13 21:06:44','2026-10-13 21:06:44'),(3,'Transporte',NULL,'Variável',600.00,'#f59e0b','2026-10-13 21:06:44','2026-10-13 21:06:44'),(4,'Estudos e Cursos',NULL,'Fixa',800.00,'#8b5cf6','2026-10-13 21:06:44','2026-10-13 21:06:44'),(5,'Lazer & Cultura',NULL,'Variável',500.00,'#ec4899','2026-10-13 21:06:44','2026-10-13 21:06:44');
+INSERT INTO `categorias` VALUES (1,'Alimentação',NULL,'Variável',1200.00,'#10b981','2026-10-23 03:33:03','2026-10-23 03:33:03'),(2,'Moradia & Contas',NULL,'Fixa',2000.00,'#3b82f6','2026-10-23 03:33:03','2026-10-23 03:33:03'),(3,'Transporte',NULL,'Variável',600.00,'#f59e0b','2026-10-23 03:33:03','2026-10-23 03:33:03'),(4,'Estudos e Cursos',NULL,'Fixa',800.00,'#8b5cf6','2026-10-23 03:33:03','2026-10-23 03:33:03'),(5,'Lazer & Cultura',NULL,'Variável',500.00,'#ec4899','2026-10-23 03:33:03','2026-10-23 03:33:03');
 /*!40000 ALTER TABLE `categorias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -155,7 +163,7 @@ CREATE TABLE `contas` (
 
 LOCK TABLES `contas` WRITE;
 /*!40000 ALTER TABLE `contas` DISABLE KEYS */;
-INSERT INTO `contas` VALUES (1,'Banco do Brasil',NULL,'1234','5678-9',4500.00,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(2,'Itaú Unibanco',NULL,'0002','123123-1',8200.50,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(3,'Nubank',NULL,'0001','987654-3',3150.75,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(4,'Inter',NULL,'0001','554433-2',12300.00,'2026-10-13 21:06:44','2026-10-13 21:06:44');
+INSERT INTO `contas` VALUES (1,'Banco do Brasil',NULL,'1234','5678-9',4500.00,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(2,'Itaú Unibanco',NULL,'0002','123123-1',8200.50,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(3,'Nubank',NULL,'0001','987654-3',3150.75,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(4,'Inter',NULL,'0001','554433-2',12300.00,'2026-10-23 03:33:03','2026-10-23 03:33:03');
 /*!40000 ALTER TABLE `contas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -280,7 +288,7 @@ CREATE TABLE `metas` (
 
 LOCK TABLES `metas` WRITE;
 /*!40000 ALTER TABLE `metas` DISABLE KEYS */;
-INSERT INTO `metas` VALUES (1,'Reserva de Emergência 6 Meses',12000.00,5500.00,'2027-08-13',1,2,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(2,'Viagem de Férias para a Praia',4500.00,3200.00,'2027-02-13',2,5,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(3,'Notebook Novo para Estudos',6000.00,4800.00,'2027-04-13',1,4,'2026-10-13 21:06:44','2026-10-13 21:06:44');
+INSERT INTO `metas` VALUES (1,'Reserva de Emergência 6 Meses',12000.00,5500.00,'2027-08-23',1,2,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(2,'Viagem de Férias para a Praia',4500.00,3200.00,'2027-02-23',2,5,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(3,'Notebook Novo para Estudos',6000.00,4800.00,'2027-04-23',1,4,'2026-10-23 03:33:03','2026-10-23 03:33:03');
 /*!40000 ALTER TABLE `metas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -296,7 +304,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -305,7 +313,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_08_23_000001_create_contas_table',1),(5,'2026_08_23_000002_create_categorias_table',1),(6,'2026_08_23_000003_create_transacoes_table',1),(7,'2026_08_23_000004_create_usuarios_table',1),(8,'2026_09_03_171203_add_campos_extras_tables',1),(9,'2026_09_18_000001_create_metas_table',1),(10,'2026_09_18_000002_create_cartoes_table',1),(11,'2026_09_18_000003_add_imagem_to_transacoes_table',1),(12,'2026_10_21_140001_remove_imagem_from_metas_table',2),(13,'2026_10_21_140002_add_imagem_to_usuarios_table',2);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_08_23_000001_create_contas_table',1),(5,'2026_08_23_000002_create_categorias_table',1),(6,'2026_08_23_000003_create_transacoes_table',1),(7,'2026_08_23_000004_create_usuarios_table',1),(8,'2026_09_18_000001_create_metas_table',1),(9,'2026_09_18_000002_create_cartoes_table',1);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -359,7 +367,6 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('4leAgx2cLRhAN3r5bjjynVV7Wjx6ycZB63yjw0P7',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.142.0 Chrome/150.0.7871.250 Electron/43.7.7 Safari/537.36','eyJfdG9rZW4iOiJLeGxnWGk4cTVqRWEyRjRpMllLMlhOTTZhbnY5M3lXaG9DQnFnVXcwIiwiX3ByZXZpb3VzIjp7InVybCI6Imh0dHA6XC9cLzEyNy4wLjAuMTo4MDAwIiwicm91dGUiOiJkYXNoYm9hcmQifSwiX2ZsYXNoIjp7Im9sZCI6W10sIm5ldyI6W119fQ==',1792602888),('Bxje9COol56CZBaUSBqI6dpMDTapCL3bsGDZVfWB',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.142.0 Chrome/150.0.7871.250 Electron/43.7.7 Safari/537.36','eyJfcHJldmlvdXMiOnsidXJsIjoiaHR0cDpcL1wvMTI3LjAuMC4xOjgwMDAiLCJyb3V0ZSI6ImRhc2hib2FyZCJ9LCJfZmxhc2giOnsib2xkIjpbXSwibmV3IjpbXX0sIl90b2tlbiI6Ik8yZ2FKNFJBYlIzV0kwMEc4eG9zVEw4Slg0amVGd2hMbFlxZjZnRE0iLCJ1c3VhcmlvX2xvZ2FkbyI6dHJ1ZSwidXN1YXJpb19pZCI6MSwidXN1YXJpb19ub21lIjoiQWRtaW5pc3RyYWRvciIsInVzdWFyaW9fbG9naW4iOiJhZG1pbiIsInVzdWFyaW9fZW1haWwiOiJhZG1pbkBmaW5hbnN5cy5jb20ifQ==',1792173325);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -396,7 +403,7 @@ CREATE TABLE `transacoes` (
 
 LOCK TABLES `transacoes` WRITE;
 /*!40000 ALTER TABLE `transacoes` DISABLE KEYS */;
-INSERT INTO `transacoes` VALUES (1,'Supermercado Central',NULL,NULL,450.80,'2026-10-08','Cartão de Débito',1,1,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(2,'Aluguel Apartamento',NULL,NULL,1500.00,'2026-10-03','Pix',2,2,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(3,'Livros Técnicos Laravel',NULL,NULL,189.90,'2026-10-11','Pix',1,4,'2026-10-13 21:06:44','2026-10-13 21:06:44'),(4,'Cinema e Lanche',NULL,NULL,95.00,'2026-10-12','Cartão de Crédito',2,5,'2026-10-13 21:06:44','2026-10-13 21:06:44');
+INSERT INTO `transacoes` VALUES (1,'Supermercado Central',NULL,NULL,450.80,'2026-10-18','Cartão de Débito',1,1,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(2,'Aluguel Apartamento',NULL,NULL,1500.00,'2026-10-13','Pix',2,2,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(3,'Livros Técnicos Laravel',NULL,NULL,189.90,'2026-10-21','Pix',1,4,'2026-10-23 03:33:03','2026-10-23 03:33:03'),(4,'Cinema e Lanche',NULL,NULL,95.00,'2026-10-22','Cartão de Crédito',2,5,'2026-10-23 03:33:03','2026-10-23 03:33:03');
 /*!40000 ALTER TABLE `transacoes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -451,7 +458,7 @@ CREATE TABLE `usuarios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `usuarios_email_unique` (`email`),
   UNIQUE KEY `usuarios_login_unique` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -460,7 +467,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Administrador',NULL,NULL,'(49) 99999-9999','admin@finansys.com','admin','123','2026-10-13 21:06:44','2026-10-13 21:06:44'),(2,'João Silva',NULL,NULL,'(49) 98888-8888','joao@finansys.com','joao','123456','2026-10-13 21:06:44','2026-10-13 21:06:44');
+INSERT INTO `usuarios` VALUES (1,'Administrador','529.982.247-25',NULL,'(49) 99999-9999','admin@finansys.com','admin','$2y$12$bgVPbrtMezIEHA8CsJLRceLIrU8Llcm6xLpgRUEDfCOKvcc4FwmMy','2026-10-23 03:33:03','2026-10-23 03:33:03');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -473,4 +480,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-21 14:51:27
+-- Dump completed on 2026-10-22 21:33:09

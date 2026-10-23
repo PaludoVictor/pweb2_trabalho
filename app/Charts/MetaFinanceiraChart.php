@@ -21,12 +21,6 @@ class MetaFinanceiraChart
             $valoresAtuais[] = (float) $item->valor_atual;
         }
 
-        if (empty($nomesMetas)) {
-            $nomesMetas = ['Reserva', 'Viagem', 'Notebook'];
-            $valoresMeta = [5000, 3000, 4500];
-            $valoresAtuais = [2500, 1800, 3200];
-        }
-
         return (new LarapexChart)->barChart()
             ->setTitle('Metas Financeiras')
             ->setSubtitle('Valor Alvo vs. Economizado (R$)')

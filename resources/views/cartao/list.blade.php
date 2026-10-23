@@ -11,10 +11,18 @@
 <form action="{{ route('cartao.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-9">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar cartão por nome...">
+        <div class="col-lg-4">
+            <input type="text" name="valor" class="form-control" value="{{ request('valor') }}" placeholder="Buscar cartão por nome...">
         </div>
-        <div class="col-md-3">
+        <div class="col-lg-4">
+            <select name="conta_id" class="form-select" aria-label="Filtrar por conta">
+                <option value="">Todas as contas</option>
+                @foreach ($contas as $conta)
+                    <option value="{{ $conta->id }}" @selected(request('conta_id') == $conta->id)>{{ $conta->nome_instituicao }} — {{ $conta->numero_conta }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-4">
             <button class="btn btn-primary" type="submit">Pesquisar</button>
             <a href="{{ url('cartao') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
@@ -23,6 +31,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
+        <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
@@ -38,11 +47,11 @@
             <tbody>
                 @forelse ($dados as $item)
                 @php
-                    $nome_imagem = !empty($item->imagem) ? $item->imagem : 'sem_imagem.jpg';
+                    $url_imagem = !empty($item->imagem) ? asset('storage/' . $item->imagem) : asset('images/sem_imagem.svg');
                 @endphp
                 <tr>
                     <td>
-                        <img src="/storage/{{ $nome_imagem }}" width="40" height="40" style="object-fit: cover; border-radius: 4px;" alt="Foto">
+                        <img src="{{ $url_imagem }}" width="40" height="40" style="object-fit: cover; border-radius: 4px;" alt="Foto">
                     </td>
                     <td>{{ $item->nome_cartao }}</td>
                     <td>{{ $item->bandeira }}</td>
@@ -65,6 +74,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @stop

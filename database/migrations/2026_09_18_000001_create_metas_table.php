@@ -17,7 +17,6 @@ return new class extends Migration
             $table->decimal('valor_meta', 12, 2);
             $table->decimal('valor_atual', 12, 2)->default(0.00);
             $table->date('data_limite');
-            $table->string('imagem', 150)->nullable();
             $table->foreignId('conta_id')->constrained('contas')->onDelete('cascade');
             $table->foreignId('categoria_id')->constrained('categorias')->onDelete('cascade');
             $table->timestamps();

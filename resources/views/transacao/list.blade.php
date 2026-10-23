@@ -15,10 +15,26 @@
 <form action="{{ route('transacao.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-9">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar transação por descrição...">
+        <div class="col-lg-3">
+            <input type="text" name="valor" class="form-control" value="{{ request('valor') }}" placeholder="Buscar transação por descrição...">
         </div>
-        <div class="col-md-3">
+        <div class="col-lg-3">
+            <select name="conta_id" class="form-select" aria-label="Filtrar por conta">
+                <option value="">Todas as contas</option>
+                @foreach ($contas as $conta)
+                    <option value="{{ $conta->id }}" @selected(request('conta_id') == $conta->id)>{{ $conta->nome_instituicao }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-3">
+            <select name="categoria_id" class="form-select" aria-label="Filtrar por categoria">
+                <option value="">Todas as categorias</option>
+                @foreach ($categorias as $categoria)
+                    <option value="{{ $categoria->id }}" @selected(request('categoria_id') == $categoria->id)>{{ $categoria->nome_categoria }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-3">
             <button class="btn btn-primary" type="submit">Pesquisar</button>
             <a href="{{ url('transacao') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
@@ -27,9 +43,11 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
+        <div class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th>Comprovante</th>
                     <th>Data</th>
                     <th>Descrição</th>
                     <th>Conta</th>
@@ -42,6 +60,7 @@
             <tbody>
                 @forelse ($dados as $t)
                 <tr>
+                    <td><img src="{{ $t->imagem ? asset('storage/' . $t->imagem) : asset('images/sem_imagem.svg') }}" width="40" height="40" style="object-fit: cover; border-radius: 4px;" alt="Comprovante"></td>
                     <td>{{ date('d/m/Y', strtotime($t->data_competencia)) }}</td>
                     <td>{{ $t->descricao_movimento }}</td>
                     <td>{{ $t->conta->nome_instituicao ?? 'N/A' }} ({{ $t->conta->numero_conta ?? '' }})</td>
@@ -67,11 +86,12 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-3 text-muted">Nenhuma transação encontrada.</td>
+                    <td colspan="8" class="text-center py-3 text-muted">Nenhuma transação encontrada.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @stop

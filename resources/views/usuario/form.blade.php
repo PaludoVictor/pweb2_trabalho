@@ -9,7 +9,7 @@
     } else {
         $action = route('usuario.store');
     }
-    $nome_imagem = !empty($data->imagem) ? $data->imagem : 'sem_imagem.jpg';
+    $url_imagem = !empty($data->imagem) ? asset('storage/' . $data->imagem) : asset('images/sem_imagem.svg');
 @endphp
 
 <div class="mb-4">
@@ -55,7 +55,7 @@
             <div class="row mb-3">
                 <div class="col-md-12">
                     <label class="form-label">Senha {{ !empty($data->id) ? '(Deixe em branco para não alterar)' : '' }}</label>
-                    <input type="password" name="senha" class="form-control" {{ empty($data->id) ? 'required' : '' }} placeholder="Senha de acesso">
+                    <input type="password" name="senha" class="form-control" minlength="8" {{ empty($data->id) ? 'required' : '' }} placeholder="Senha de acesso">
                 </div>
             </div>
 
@@ -63,7 +63,7 @@
             <div class="row mb-4">
                 <div class="col-md-3 text-center">
                     <label class="form-label d-block">Foto Atual</label>
-                    <img src="/storage/{{ $nome_imagem }}" class="rounded-circle shadow-sm" width="120" height="120" style="object-fit: cover; border: 3px solid #e5e7eb;" alt="Foto do Usuário">
+                    <img src="{{ $url_imagem }}" class="rounded-circle shadow-sm" width="120" height="120" style="object-fit: cover; border: 3px solid #e5e7eb;" alt="Foto do Usuário">
                 </div>
                 <div class="col-md-9 d-flex flex-column justify-content-center">
                     <label class="form-label">Foto de Perfil (PNG, JPG ou JPEG)</label>

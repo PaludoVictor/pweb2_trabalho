@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('categorias', function (Blueprint $table) {
             $table->id();
             $table->string('nome_categoria', 100);
+            $table->text('descricao')->nullable();
             $table->string('tipo_despesa', 50);
             $table->decimal('limite_orcamento', 10, 2)->default(0.00);
             $table->string('cor_identificacao', 20)->default('#10b981');

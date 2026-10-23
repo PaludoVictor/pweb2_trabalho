@@ -9,20 +9,14 @@ class TransacaoCategoriaChart
 {
     public function build(): \ArielMejiaDev\LarapexCharts\PieChart
     {
-        $categorias = Categoria::all();
+        $categorias = Categoria::withSum('transacoes', 'valor_transacao')->get();
 
         $nomesCategorias = [];
         $valoresGastos = [];
 
         foreach ($categorias as $item) {
             $nomesCategorias[] = $item->nome_categoria;
-            $valoresGastos[] = (float) $item->transacoes->sum('valor_transacao');
-        }
-
-        // Se nao houver gastos cadastrados, exibe valores ilustrativos
-        if (empty(array_filter($valoresGastos))) {
-            $valoresGastos = [100, 200, 150, 80, 50];
-            $nomesCategorias = ['Alimentação', 'Moradia', 'Transporte', 'Lazer', 'Estudos'];
+            $valoresGastos[] = (float) $item->transacoes_sum_valor_transacao;
         }
 
         return (new LarapexChart)->pieChart()

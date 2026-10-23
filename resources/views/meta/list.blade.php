@@ -14,10 +14,26 @@
 <form action="{{ route('meta.search') }}" method="POST" class="mb-4">
     @csrf
     <div class="row g-2 align-items-center">
-        <div class="col-md-9">
-            <input type="text" name="valor" class="form-control" placeholder="Buscar meta por título...">
+        <div class="col-lg-3">
+            <input type="text" name="valor" class="form-control" value="{{ request('valor') }}" placeholder="Buscar meta por título...">
         </div>
-        <div class="col-md-3">
+        <div class="col-lg-3">
+            <select name="conta_id" class="form-select" aria-label="Filtrar por conta">
+                <option value="">Todas as contas</option>
+                @foreach ($contas as $conta)
+                    <option value="{{ $conta->id }}" @selected(request('conta_id') == $conta->id)>{{ $conta->nome_instituicao }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-3">
+            <select name="categoria_id" class="form-select" aria-label="Filtrar por categoria">
+                <option value="">Todas as categorias</option>
+                @foreach ($categorias as $categoria)
+                    <option value="{{ $categoria->id }}" @selected(request('categoria_id') == $categoria->id)>{{ $categoria->nome_categoria }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-3">
             <button class="btn btn-primary" type="submit">Pesquisar</button>
             <a href="{{ url('meta') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
@@ -26,6 +42,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
+        <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
@@ -63,6 +80,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @stop

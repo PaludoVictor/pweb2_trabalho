@@ -12,26 +12,27 @@ class CartaoController extends Controller
     public function index()
     {
         $dados = Cartao::with('conta')->orderBy('id', 'desc')->get();
+        $contas = Conta::orderBy('nome_instituicao')->get();
 
-        return view('cartao.list')->with(['dados' => $dados]);
+        return view('cartao.list', compact('dados', 'contas'));
     }
 
     public function create()
     {
-        $contas = Conta::orderBy('nome_instituicao')->get();
+        $contas = Conta::doesntHave('cartoes')->orderBy('nome_instituicao')->get();
 
         return view('cartao.form')->with(compact('contas'));
     }
 
-    public function validateForm(Request $request)
+    public function validateForm(Request $request, ?int $id = null)
     {
         $request->validate([
-            'nome_cartao' => 'required',
-            'bandeira' => 'required',
-            'limite_credito' => 'required|numeric|min:0.01',
+            'nome_cartao' => 'required|string|max:100',
+            'bandeira' => 'required|string|max:50',
+            'limite_credito' => 'required|numeric|min:0.01|max:9999999999.99',
             'dia_vencimento' => 'required|integer|min:1|max:31',
-            'conta_id' => 'required|exists:contas,id',
-            'imagem' => 'nullable|image|mimes:png,jpg,jpeg',
+            'conta_id' => ['required', 'exists:contas,id', \Illuminate\Validation\Rule::unique('cartoes', 'conta_id')->ignore($id)],
+            'imagem' => 'nullable|image|mimes:png,jpg,jpeg|max:4096',
         ], [
             'nome_cartao.required' => "O :attribute é obrigatório",
             'bandeira.required' => "A :attribute é obrigatória",
@@ -44,6 +45,7 @@ class CartaoController extends Controller
             'dia_vencimento.max' => "O :attribute deve ser entre 1 e 31",
             'conta_id.required' => "A conta bancária é obrigatória",
             'conta_id.exists' => "A conta bancária selecionada é inválida",
+            'conta_id.unique' => 'Esta conta já possui um cartão.',
             'imagem.image' => "O arquivo de :attribute deve ser uma imagem válida",
             'imagem.mimes' => "A imagem deve ser das extensões: PNG, JPEG, JPG",
         ]);
@@ -53,14 +55,11 @@ class CartaoController extends Controller
     {
         $this->validateForm($request);
 
-        $data = $request->all();
+        $data = $request->only(['nome_cartao', 'bandeira', 'limite_credito', 'dia_vencimento', 'conta_id']);
         $imagem = $request->file('imagem');
 
         if ($imagem) {
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/cartao/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
+            $data['imagem'] = $imagem->store('imagem/cartao', 'public');
         }
 
         Cartao::create($data);
@@ -76,32 +75,30 @@ class CartaoController extends Controller
             return redirect('cartao')->with("error", 'Cartão não encontrado.');
         }
 
-        $contas = Conta::orderBy('nome_instituicao')->get();
+        $contas = Conta::whereDoesntHave('cartoes', fn ($query) => $query->whereKeyNot($data->id))
+            ->orderBy('nome_instituicao')->get();
 
         return view('cartao.form')->with(compact('data', 'contas'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validateForm($request);
+        $this->validateForm($request, (int) $id);
 
         $cartao = Cartao::findOrFail($id);
-        $data = $request->all();
+        $data = $request->only(['nome_cartao', 'bandeira', 'limite_credito', 'dia_vencimento', 'conta_id']);
         $imagem = $request->file('imagem');
 
         if ($imagem) {
-            // Se já existia uma imagem anterior, remove o arquivo físico antigo
-            if (!empty($cartao->imagem) && Storage::disk('public')->exists($cartao->imagem)) {
-                Storage::disk('public')->delete($cartao->imagem);
-            }
-
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/cartao/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
+            $data['imagem'] = $imagem->store('imagem/cartao', 'public');
         }
 
+        $oldImage = $cartao->imagem;
         $cartao->update($data);
+
+        if ($imagem && $oldImage && !Cartao::where('imagem', $oldImage)->exists()) {
+            Storage::disk('public')->delete($oldImage);
+        }
 
         return redirect('cartao')->with("success", 'Registro Atualizado com sucesso!');
     }
@@ -111,12 +108,12 @@ class CartaoController extends Controller
         $cartao = Cartao::find($id);
 
         if ($cartao) {
-            // Exclui o arquivo físico ao deletar o registro (Requisito do Edital)
-            if (!empty($cartao->imagem) && Storage::disk('public')->exists($cartao->imagem)) {
-                Storage::disk('public')->delete($cartao->imagem);
-            }
-
+            $oldImage = $cartao->imagem;
             Cartao::destroy($id);
+
+            if ($oldImage && !Cartao::where('imagem', $oldImage)->exists()) {
+                Storage::disk('public')->delete($oldImage);
+            }
         }
 
         return redirect('cartao')->with("success", 'Registro removido com sucesso!');
@@ -124,29 +121,30 @@ class CartaoController extends Controller
 
     public function search(Request $request)
     {
+        $query = Cartao::with('conta');
+
         if (!empty($request->valor)) {
             $tipo = $request->tipo;
             $valor = $request->valor;
 
             if ($tipo === 'conta') {
-                $dados = Cartao::with('conta')
-                    ->whereHas('conta', function ($q) use ($valor) {
-                        $q->where('nome_instituicao', 'like', "%$valor%");
-                    })->get();
+                $query->whereHas('conta', fn ($q) => $q->where('nome_instituicao', 'like', "%$valor%"));
             } elseif ($tipo === 'bandeira') {
-                $dados = Cartao::with('conta')
-                    ->where('bandeira', 'like', "%$valor%")
-                    ->get();
+                $query->where('bandeira', 'like', "%$valor%");
             } else {
-                $dados = Cartao::with('conta')
-                    ->where('nome_cartao', 'like', "%$valor%")
-                    ->get();
+                $query->where('nome_cartao', 'like', "%$valor%");
             }
-        } else {
-            $dados = Cartao::with('conta')->orderBy('id', 'desc')->get();
         }
 
-        return view('cartao.list', compact('dados'));
+        if ($request->filled('conta_id')) {
+            $request->validate(['conta_id' => 'exists:contas,id']);
+            $query->where('conta_id', $request->conta_id);
+        }
+
+        $dados = $query->orderBy('id', 'desc')->get();
+        $contas = Conta::orderBy('nome_instituicao')->get();
+
+        return view('cartao.list', compact('dados', 'contas'));
     }
 }
 

@@ -31,6 +31,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
+        <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
@@ -46,11 +47,11 @@
             <tbody>
                 @forelse ($dados as $u)
                 @php
-                    $nome_imagem = !empty($u->imagem) ? $u->imagem : 'sem_imagem.jpg';
+                    $url_imagem = !empty($u->imagem) ? asset('storage/' . $u->imagem) : asset('images/sem_imagem.svg');
                 @endphp
                 <tr>
                     <td>
-                        <img src="/storage/{{ $nome_imagem }}" width="42" height="42" class="rounded-circle shadow-sm" style="object-fit: cover; border: 2px solid #e5e7eb;" alt="Foto">
+                        <img src="{{ $url_imagem }}" width="42" height="42" class="rounded-circle shadow-sm" style="object-fit: cover; border: 2px solid #e5e7eb;" alt="Foto">
                     </td>
                     <td><strong>{{ $u->nome }}</strong></td>
                     <td>{{ $u->cpf ?? '-' }}</td>
@@ -73,6 +74,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @stop

@@ -12,29 +12,16 @@ class UsuarioSeeder extends Seeder
      */
     public function run(): void
     {
-        Usuario::firstOrCreate(
+        Usuario::updateOrCreate(
             ['login' => 'admin'],
             [
                 'nome' => 'Administrador',
-                'cpf' => '000.000.000-00',
+                'cpf' => '529.982.247-25',
                 'imagem' => null,
                 'telefone' => '(49) 99999-9999',
                 'email' => 'admin@finansys.com',
                 'login' => 'admin',
-                'senha' => '123', // Padrão usado no PWEB1
-            ]
-        );
-
-        Usuario::firstOrCreate(
-            ['login' => 'joao'],
-            [
-                'nome' => 'João Silva',
-                'cpf' => '111.111.111-11',
-                'imagem' => null,
-                'telefone' => '(49) 98888-8888',
-                'email' => 'joao@finansys.com',
-                'login' => 'joao',
-                'senha' => '123456',
+                'senha' => '123',
             ]
         );
     }

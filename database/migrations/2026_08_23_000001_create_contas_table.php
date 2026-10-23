@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('contas', function (Blueprint $table) {
             $table->id();
             $table->string('nome_instituicao', 100);
+            $table->string('tipo_conta', 50)->nullable();
             $table->string('agencia_numero', 20);
             $table->string('numero_conta', 30)->unique();
             $table->decimal('saldo_atual', 12, 2)->default(0.00);

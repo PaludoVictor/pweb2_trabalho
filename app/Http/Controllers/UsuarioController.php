@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Storage;
+use App\Rules\CpfValido;
 
 class UsuarioController extends Controller
 {
@@ -26,16 +27,16 @@ class UsuarioController extends Controller
         $uniqueLogin = 'unique:usuarios,login' . ($id ? ",$id" : '');
 
         $rules = [
-            'nome' => 'required',
-            'cpf' => 'required',
-            'telefone' => 'required',
-            'email' => 'required|email|' . $uniqueEmail,
-            'login' => 'required|' . $uniqueLogin,
-            'imagem' => 'nullable|image|mimes:png,jpg,jpeg',
+            'nome' => 'required|string|max:100',
+            'cpf' => ['required', new CpfValido],
+            'telefone' => 'required|string|max:20',
+            'email' => 'required|email|max:100|' . $uniqueEmail,
+            'login' => 'required|string|max:50|' . $uniqueLogin,
+            'imagem' => 'nullable|image|mimes:png,jpg,jpeg|max:4096',
         ];
 
         if (!$id || !empty($request->senha)) {
-            $rules['senha'] = 'required|min:3';
+            $rules['senha'] = 'required|string|min:8|max:255';
         }
 
         $request->validate($rules, [
@@ -48,7 +49,7 @@ class UsuarioController extends Controller
             'login.required' => 'O login é obrigatório.',
             'login.unique' => 'Este login já está em uso.',
             'senha.required' => 'A senha é obrigatória.',
-            'senha.min' => 'A senha deve ter pelo menos 3 caracteres.',
+            'senha.min' => 'A senha deve ter pelo menos 8 caracteres.',
             'imagem.image' => 'O arquivo de foto deve ser uma imagem válida.',
             'imagem.mimes' => 'A foto deve ser das extensões: PNG, JPEG, JPG.',
         ]);
@@ -58,14 +59,11 @@ class UsuarioController extends Controller
     {
         $this->validateForm($request);
 
-        $data = $request->all();
+        $data = $request->only(['nome', 'cpf', 'telefone', 'email', 'login', 'senha']);
         $imagem = $request->file('imagem');
 
         if ($imagem) {
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/usuario/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
+            $data['imagem'] = $imagem->store('imagem/usuario', 'public');
         }
 
         Usuario::create($data);
@@ -89,7 +87,7 @@ class UsuarioController extends Controller
         $this->validateForm($request, $id);
 
         $usuario = Usuario::findOrFail($id);
-        $dados = $request->except(['senha']);
+        $dados = $request->only(['nome', 'cpf', 'telefone', 'email', 'login']);
 
         if (!empty($request->senha)) {
             $dados['senha'] = $request->senha;
@@ -97,18 +95,15 @@ class UsuarioController extends Controller
 
         $imagem = $request->file('imagem');
         if ($imagem) {
-            // Se já existia uma imagem anterior, remove o arquivo físico antigo
-            if (!empty($usuario->imagem) && Storage::disk('public')->exists($usuario->imagem)) {
-                Storage::disk('public')->delete($usuario->imagem);
-            }
-
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/usuario/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $dados['imagem'] = $diretorio . $nome_imagem;
+            $dados['imagem'] = $imagem->store('imagem/usuario', 'public');
         }
 
+        $oldImage = $usuario->imagem;
         $usuario->update($dados);
+
+        if ($imagem && $oldImage && !Usuario::where('imagem', $oldImage)->exists()) {
+            Storage::disk('public')->delete($oldImage);
+        }
 
         // Se o usuário atualizou seu próprio perfil, atualiza a sessão
         if (session('usuario_id') == $usuario->id) {
@@ -129,11 +124,12 @@ class UsuarioController extends Controller
 
         if ($usuario) {
             // Exclui o arquivo físico ao deletar o registro (Requisito Item 4 do PDF)
-            if (!empty($usuario->imagem) && Storage::disk('public')->exists($usuario->imagem)) {
-                Storage::disk('public')->delete($usuario->imagem);
-            }
-
+            $oldImage = $usuario->imagem;
             Usuario::destroy($id);
+
+            if ($oldImage && !Usuario::where('imagem', $oldImage)->exists()) {
+                Storage::disk('public')->delete($oldImage);
+            }
         }
 
         return redirect('usuario')->with('success', 'Registro removido com sucesso!');

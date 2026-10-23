@@ -13,9 +13,9 @@ use App\Http\Controllers\AuthController;
 // Autenticação e Sessão
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/registro', [AuthController::class, 'register'])->name('register.post');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('usuario')->name('logout');
+
+Route::middleware('usuario')->group(function () {
 
 // Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -65,7 +65,7 @@ Route::put('/meta/update/{id}', [MetaController::class, 'update'])->name('meta.u
 Route::delete('/meta/{id}', [MetaController::class, 'destroy'])->name('meta.destroy');
 Route::post('/meta/search', [MetaController::class, 'search'])->name('meta.search');
 
-// CRUD Cartões de Crédito (Novo CRUD 2)
+// CRUD Cartões de Crédito
 Route::get('/cartao', [CartaoController::class, 'index']);
 Route::get('/cartao/create', [CartaoController::class, 'create']);
 Route::post('/cartao/store', [CartaoController::class, 'store'])->name('cartao.store');
@@ -82,3 +82,4 @@ Route::get('/usuario/edit/{id}', [UsuarioController::class, 'edit'])->name('usua
 Route::put('/usuario/update/{id}', [UsuarioController::class, 'update'])->name('usuario.update');
 Route::delete('/usuario/{id}', [UsuarioController::class, 'destroy'])->name('usuario.destroy');
 Route::post('/usuario/search', [UsuarioController::class, 'search'])->name('usuario.search');
+});

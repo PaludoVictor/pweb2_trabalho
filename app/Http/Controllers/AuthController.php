@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -19,18 +20,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'login' => 'required',
+            'login' => 'required|string|max:50',
             'senha' => 'required',
         ], [
             'login.required' => 'O usuário/login é obrigatório.',
             'senha.required' => 'A senha é obrigatória.',
         ]);
 
-        $usuario = Usuario::where('login', $request->login)
-            ->where('senha', $request->senha)
-            ->first();
+        $usuario = Usuario::where('login', $request->login)->first();
 
-        if ($usuario) {
+        if ($usuario && Hash::check($request->senha, $usuario->senha)) {
+            $request->session()->regenerate();
             session([
                 'usuario_logado' => true,
                 'usuario_id' => $usuario->id,
@@ -46,45 +46,10 @@ class AuthController extends Controller
         return back()->with('error', 'Login ou senha incorretos!')->withInput();
     }
 
-    public function showRegisterForm()
+    public function logout(Request $request)
     {
-        if (session('usuario_logado')) {
-            return redirect('/');
-        }
-
-        return view('auth.registro');
-    }
-
-    public function register(Request $request)
-    {
-        $request->validate([
-            'nome' => 'required',
-            'cpf' => 'nullable',
-            'telefone' => 'required',
-            'email' => 'required|email|unique:usuarios,email',
-            'login' => 'required|unique:usuarios,login',
-            'senha' => 'required|min:3',
-        ], [
-            'nome.required' => 'O nome completo é obrigatório.',
-            'telefone.required' => 'O telefone é obrigatório.',
-            'email.required' => 'O e-mail é obrigatório.',
-            'email.email' => 'Informe um e-mail válido.',
-            'email.unique' => 'Este e-mail já está cadastrado.',
-            'login.required' => 'O login é obrigatório.',
-            'login.unique' => 'Este login já está cadastrado.',
-            'senha.required' => 'A senha é obrigatória.',
-            'senha.min' => 'A senha deve ter no mínimo 3 caracteres.',
-        ]);
-
-        Usuario::create($request->all());
-
-        return redirect('/login');
-    }
-
-    public function logout()
-    {
-        session()->forget(['usuario_logado', 'usuario_id', 'usuario_nome', 'usuario_login', 'usuario_email', 'usuario_imagem']);
-        session()->flush();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/login');
     }

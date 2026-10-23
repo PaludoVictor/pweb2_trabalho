@@ -17,7 +17,7 @@ class CartaoFactory extends Factory
      */
     public function definition(): array
     {
-        $contaId = Conta::inRandomOrder()->first()?->id ?? Conta::factory();
+        $contaId = Conta::factory();
 
         return [
             'nome_cartao' => fake()->randomElement([

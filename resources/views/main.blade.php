@@ -50,6 +50,13 @@
         /* Área principal de conteúdo */
         .main-content {
             min-height: 100vh;
+            min-width: 0;
+        }
+        .navigation-shell { flex: 0 0 260px; }
+        @media (max-width: 991.98px) {
+            .navigation-shell { flex: none; }
+            .sidebar { width: 100%; height: auto !important; min-height: 100%; }
+            .main-content .container-fluid { padding: 1rem !important; }
         }
         
         /* Card customizado para o painel */
@@ -64,9 +71,18 @@
 <body>
 
 <div class="d-flex flex-nowrap">
-    @include('sidebar')
+    <div class="offcanvas-lg offcanvas-start navigation-shell" tabindex="-1" id="navSidebar" aria-labelledby="navSidebarLabel" style="--bs-offcanvas-width: 260px;">
+        <div class="offcanvas-header d-lg-none bg-dark text-white">
+            <h5 class="offcanvas-title" id="navSidebarLabel">FinanSys</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#navSidebar" aria-label="Fechar menu"></button>
+        </div>
+        @include('sidebar')
+    </div>
 
     <main class="main-content flex-grow-1 d-flex flex-column">
+        <div class="d-lg-none border-bottom bg-white p-3">
+            <button class="btn btn-outline-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#navSidebar" aria-controls="navSidebar">☰ Menu</button>
+        </div>
         <div class="container-fluid p-5 flex-grow-1">
 
             @if (session('success'))

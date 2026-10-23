@@ -22,10 +22,10 @@ class CategoriaController extends Controller
     public function validateForm(Request $request)
     {
         $request->validate([
-            'nome_categoria' => 'required',
-            'tipo_despesa' => 'required',
-            'limite_orcamento' => 'required|numeric|min:0',
-            'cor_identificacao' => 'required',
+            'nome_categoria' => 'required|string|max:100',
+            'tipo_despesa' => 'required|in:Fixa,Variável',
+            'limite_orcamento' => 'required|numeric|min:0|max:99999999.99',
+            'cor_identificacao' => 'required|regex:/^#[0-9a-fA-F]{6}$/',
         ], [
             'nome_categoria.required' => 'O nome da categoria é obrigatório.',
             'tipo_despesa.required' => 'O tipo de despesa é obrigatório.',

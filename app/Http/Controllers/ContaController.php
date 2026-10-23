@@ -25,10 +25,10 @@ class ContaController extends Controller
         $uniqueRule = 'unique:contas,numero_conta' . ($id ? ",$id" : '');
 
         $request->validate([
-            'nome_instituicao' => 'required',
-            'agencia_numero' => 'required',
-            'numero_conta' => 'required|' . $uniqueRule,
-            'saldo_atual' => 'required|numeric',
+            'nome_instituicao' => 'required|string|max:100',
+            'agencia_numero' => 'required|string|max:20',
+            'numero_conta' => 'required|string|max:30|' . $uniqueRule,
+            'saldo_atual' => 'required|numeric|between:-9999999999.99,9999999999.99',
         ], [
             'nome_instituicao.required' => 'A instituição financeira é obrigatória.',
             'agencia_numero.required' => 'O número da agência é obrigatório.',

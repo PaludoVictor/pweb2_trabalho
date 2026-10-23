@@ -9,7 +9,7 @@
     } else {
         $action = route('cartao.store');
     }
-    $nome_imagem = !empty($data->imagem) ? $data->imagem : 'sem_imagem.jpg';
+    $url_imagem = !empty($data->imagem) ? asset('storage/' . $data->imagem) : asset('images/sem_imagem.svg');
 @endphp
 
 <div class="mb-4">
@@ -74,7 +74,7 @@
             <div class="row mb-4">
                 <div class="col-md-3 text-center">
                     <label class="form-label d-block">Foto / Frente do Cartão</label>
-                    <img src="/storage/{{ $nome_imagem }}" class="img-thumbnail rounded shadow-sm" width="120" height="120" style="object-fit: cover;" alt="Imagem do Cartão">
+                    <img src="{{ $url_imagem }}" class="img-thumbnail rounded shadow-sm" width="120" height="120" style="object-fit: cover;" alt="Imagem do Cartão">
                 </div>
                 <div class="col-md-9 d-flex flex-column justify-content-center">
                     <label class="form-label">Foto / Imagem do Cartão ou Logo (PNG, JPG ou JPEG)</label>

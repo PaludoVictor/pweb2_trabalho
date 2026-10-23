@@ -13,7 +13,11 @@
     <div class="col-md-6 mb-4">
         <div class="card card-modern shadow-sm border-0 h-100">
             <div class="card-body p-4">
-                {!! $graficoGastos->container() !!}
+                @if ($temGastos)
+                    {!! $graficoGastos->container() !!}
+                @else
+                    <p class="text-muted mb-0">Cadastre uma transação para visualizar os gastos por categoria.</p>
+                @endif
             </div>
         </div>
     </div>
@@ -22,14 +26,24 @@
     <div class="col-md-6 mb-4">
         <div class="card card-modern shadow-sm border-0 h-100">
             <div class="card-body p-4">
-                {!! $graficoMetas->container() !!}
+                @if ($temMetas)
+                    {!! $graficoMetas->container() !!}
+                @else
+                    <p class="text-muted mb-0">Cadastre uma meta para visualizar o gráfico.</p>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
-<script src="{{ $graficoGastos->cdn() }}"></script>
-{{ $graficoGastos->script() }}
-{{ $graficoMetas->script() }}
+@if ($temGastos || $temMetas)
+    <script src="{{ $graficoGastos->cdn() }}"></script>
+    @if ($temGastos)
+        {{ $graficoGastos->script() }}
+    @endif
+    @if ($temMetas)
+        {{ $graficoMetas->script() }}
+    @endif
+@endif
 @stop
 

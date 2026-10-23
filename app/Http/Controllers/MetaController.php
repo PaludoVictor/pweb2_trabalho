@@ -14,8 +14,10 @@ class MetaController extends Controller
     public function index()
     {
         $dados = Meta::with(['conta', 'categoria'])->orderBy('id', 'desc')->get();
+        $contas = Conta::orderBy('nome_instituicao')->get();
+        $categorias = Categoria::orderBy('nome_categoria')->get();
 
-        return view('meta.list')->with(['dados' => $dados]);
+        return view('meta.list', compact('dados', 'contas', 'categorias'));
     }
 
     public function create()
@@ -29,9 +31,9 @@ class MetaController extends Controller
     public function validateForm(Request $request)
     {
         $request->validate([
-            'titulo' => 'required',
-            'valor_meta' => 'required|numeric|min:0.01',
-            'valor_atual' => 'nullable|numeric|min:0',
+            'titulo' => 'required|string|max:150',
+            'valor_meta' => 'required|numeric|min:0.01|max:9999999999.99',
+            'valor_atual' => 'nullable|numeric|min:0|max:9999999999.99',
             'data_limite' => 'required|date',
             'conta_id' => 'required|exists:contas,id',
             'categoria_id' => 'required|exists:categorias,id',
@@ -100,34 +102,39 @@ class MetaController extends Controller
 
     public function search(Request $request)
     {
+        $query = Meta::with(['conta', 'categoria']);
+
         if (!empty($request->valor)) {
             $tipo = $request->tipo;
             $valor = $request->valor;
 
             if ($tipo === 'categoria') {
-                $dados = Meta::with(['conta', 'categoria'])
-                    ->whereHas('categoria', function ($q) use ($valor) {
-                        $q->where('nome_categoria', 'like', "%$valor%");
-                    })->get();
+                $query->whereHas('categoria', fn ($q) => $q->where('nome_categoria', 'like', "%$valor%"));
             } elseif ($tipo === 'conta') {
-                $dados = Meta::with(['conta', 'categoria'])
-                    ->whereHas('conta', function ($q) use ($valor) {
-                        $q->where('nome_instituicao', 'like', "%$valor%");
-                    })->get();
+                $query->whereHas('conta', fn ($q) => $q->where('nome_instituicao', 'like', "%$valor%"));
             } else {
-                $dados = Meta::with(['conta', 'categoria'])
-                    ->where('titulo', 'like', "%$valor%")
-                    ->get();
+                $query->where('titulo', 'like', "%$valor%");
             }
-        } else {
-            $dados = Meta::with(['conta', 'categoria'])->orderBy('id', 'desc')->get();
         }
 
-        return view('meta.list', compact('dados'));
+        if ($request->filled('conta_id')) {
+            $request->validate(['conta_id' => 'exists:contas,id']);
+            $query->where('conta_id', $request->conta_id);
+        }
+        if ($request->filled('categoria_id')) {
+            $request->validate(['categoria_id' => 'exists:categorias,id']);
+            $query->where('categoria_id', $request->categoria_id);
+        }
+
+        $dados = $query->orderBy('id', 'desc')->get();
+        $contas = Conta::orderBy('nome_instituicao')->get();
+        $categorias = Categoria::orderBy('nome_categoria')->get();
+
+        return view('meta.list', compact('dados', 'contas', 'categorias'));
     }
 
     public function chart(MetaFinanceiraChart $chart)
     {
-        return view('meta.chart', ['chart' => $chart->build()]);
+        return view('meta.chart', ['chart' => $chart->build(), 'temDados' => Meta::exists()]);
     }
 }

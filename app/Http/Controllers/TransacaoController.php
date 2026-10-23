@@ -15,8 +15,10 @@ class TransacaoController extends Controller
     public function index()
     {
         $dados = Transacao::with(['conta', 'categoria'])->orderBy('data_competencia', 'desc')->get();
+        $contas = Conta::orderBy('nome_instituicao')->get();
+        $categorias = Categoria::orderBy('nome_categoria')->get();
 
-        return view('transacao.list')->with(['dados' => $dados]);
+        return view('transacao.list', compact('dados', 'contas', 'categorias'));
     }
 
     public function create()
@@ -30,13 +32,13 @@ class TransacaoController extends Controller
     public function validateForm(Request $request)
     {
         $request->validate([
-            'descricao_movimento' => 'required',
-            'valor_transacao' => 'required|numeric|min:0.01',
+            'descricao_movimento' => 'required|string|max:150',
+            'valor_transacao' => 'required|numeric|min:0.01|max:99999999.99',
             'data_competencia' => 'required|date',
-            'metodo_pagamento' => 'required',
+            'metodo_pagamento' => 'required|string|max:50',
             'conta_id' => 'required|exists:contas,id',
             'categoria_id' => 'required|exists:categorias,id',
-            'imagem' => 'nullable|image|mimes:png,jpg,jpeg',
+            'imagem' => 'nullable|image|mimes:png,jpg,jpeg|max:4096',
         ], [
             'descricao_movimento.required' => 'A descrição da transação é obrigatória.',
             'valor_transacao.required' => 'O valor da transação é obrigatório.',
@@ -58,14 +60,11 @@ class TransacaoController extends Controller
     {
         $this->validateForm($request);
 
-        $data = $request->all();
+        $data = $request->only(['descricao_movimento', 'valor_transacao', 'data_competencia', 'metodo_pagamento', 'observacao', 'conta_id', 'categoria_id']);
         $imagem = $request->file('imagem');
 
         if ($imagem) {
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/transacao/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
+            $data['imagem'] = $imagem->store('imagem/transacao', 'public');
         }
 
         Transacao::create($data);
@@ -92,21 +91,19 @@ class TransacaoController extends Controller
         $this->validateForm($request);
 
         $transacao = Transacao::findOrFail($id);
-        $data = $request->all();
+        $data = $request->only(['descricao_movimento', 'valor_transacao', 'data_competencia', 'metodo_pagamento', 'observacao', 'conta_id', 'categoria_id']);
         $imagem = $request->file('imagem');
 
         if ($imagem) {
-            if (!empty($transacao->imagem) && Storage::disk('public')->exists($transacao->imagem)) {
-                Storage::disk('public')->delete($transacao->imagem);
-            }
-
-            $nome_imagem = date('YmdiHs') . "." . $imagem->getClientOriginalExtension();
-            $diretorio = "imagem/transacao/";
-            $imagem->storeAs($diretorio, $nome_imagem, 'public');
-            $data['imagem'] = $diretorio . $nome_imagem;
+            $data['imagem'] = $imagem->store('imagem/transacao', 'public');
         }
 
+        $oldImage = $transacao->imagem;
         $transacao->update($data);
+
+        if ($imagem && $oldImage && !Transacao::where('imagem', $oldImage)->exists()) {
+            Storage::disk('public')->delete($oldImage);
+        }
 
         return redirect('transacao')->with('success', 'Registro Atualizado com sucesso!');
     }
@@ -116,12 +113,12 @@ class TransacaoController extends Controller
         $transacao = Transacao::find($id);
 
         if ($transacao) {
-            // Exclui o arquivo do comprovante se existir
-            if (!empty($transacao->imagem) && Storage::disk('public')->exists($transacao->imagem)) {
-                Storage::disk('public')->delete($transacao->imagem);
-            }
-
+            $oldImage = $transacao->imagem;
             Transacao::destroy($id);
+
+            if ($oldImage && !Transacao::where('imagem', $oldImage)->exists()) {
+                Storage::disk('public')->delete($oldImage);
+            }
         }
 
         return redirect('transacao')->with('success', 'Registro removido com sucesso!');
@@ -129,36 +126,36 @@ class TransacaoController extends Controller
 
     public function search(Request $request)
     {
+        $query = Transacao::with(['conta', 'categoria']);
+
         if (!empty($request->valor)) {
             $tipo = $request->tipo;
             $valor = $request->valor;
 
             if ($tipo === 'nome_categoria') {
-                $dados = Transacao::with(['conta', 'categoria'])
-                    ->whereHas('categoria', function ($q) use ($valor) {
-                        $q->where('nome_categoria', 'like', "%$valor%");
-                    })
-                    ->orderBy('data_competencia', 'desc')
-                    ->get();
+                $query->whereHas('categoria', fn ($q) => $q->where('nome_categoria', 'like', "%$valor%"));
             } elseif ($tipo === 'nome_instituicao') {
-                $dados = Transacao::with(['conta', 'categoria'])
-                    ->whereHas('conta', function ($q) use ($valor) {
-                        $q->where('nome_instituicao', 'like', "%$valor%");
-                    })
-                    ->orderBy('data_competencia', 'desc')
-                    ->get();
+                $query->whereHas('conta', fn ($q) => $q->where('nome_instituicao', 'like', "%$valor%"));
             } else {
                 $campo = in_array($tipo, ['descricao_movimento', 'metodo_pagamento']) ? $tipo : 'descricao_movimento';
-                $dados = Transacao::with(['conta', 'categoria'])
-                    ->where($campo, 'like', "%$valor%")
-                    ->orderBy('data_competencia', 'desc')
-                    ->get();
+                $query->where($campo, 'like', "%$valor%");
             }
-        } else {
-            $dados = Transacao::with(['conta', 'categoria'])->orderBy('data_competencia', 'desc')->get();
         }
 
-        return view('transacao.list', compact('dados'));
+        if ($request->filled('conta_id')) {
+            $request->validate(['conta_id' => 'exists:contas,id']);
+            $query->where('conta_id', $request->conta_id);
+        }
+        if ($request->filled('categoria_id')) {
+            $request->validate(['categoria_id' => 'exists:categorias,id']);
+            $query->where('categoria_id', $request->categoria_id);
+        }
+
+        $dados = $query->orderBy('data_competencia', 'desc')->get();
+        $contas = Conta::orderBy('nome_instituicao')->get();
+        $categorias = Categoria::orderBy('nome_categoria')->get();
+
+        return view('transacao.list', compact('dados', 'contas', 'categorias'));
     }
 
     public function report()
@@ -193,6 +190,6 @@ class TransacaoController extends Controller
 
     public function chart(TransacaoCategoriaChart $chart)
     {
-        return view('transacao.chart', ['chart' => $chart->build()]);
+        return view('transacao.chart', ['chart' => $chart->build(), 'temDados' => Transacao::exists()]);
     }
 }

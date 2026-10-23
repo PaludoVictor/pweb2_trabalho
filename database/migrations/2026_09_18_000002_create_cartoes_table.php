@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('limite_credito', 12, 2);
             $table->integer('dia_vencimento');
             $table->string('imagem', 150)->nullable();
-            $table->foreignId('conta_id')->constrained('contas')->onDelete('cascade');
+            $table->foreignId('conta_id')->unique()->constrained('contas')->onDelete('cascade');
             $table->timestamps();
         });
     }
