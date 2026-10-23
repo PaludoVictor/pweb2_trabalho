@@ -27,9 +27,7 @@
         </div>
     </div>
 
-    <footer class="text-center py-4 text-xs text-gray-400">
-        FinanSys &bull; PWEB 2 &bull; Gráficos com Larapex Charts
-    </footer>
+
 
     @if ($temDados)
         <script src="{{ $chart->cdn() }}"></script>
